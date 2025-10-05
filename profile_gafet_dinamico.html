@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXPLORACIONES OBR - Perfil de Operativo</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        body { background-color: #050505; }
+        
+        .card-container {
+            /* Estilos del contenedor principal, simula el gafete */
+            min-height: 100vh;
+            background-color: #050505;
+            border: 4px solid #34d399;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+            padding: 2rem;
+            width: 100%;
+            max-width: 25rem; /* Ancho similar a un gafete grande */
+        }
+
+        /* Estilo de la tipografía para terminal/futurista */
+        .terminal-text {
+            font-family: 'Orbitron', monospace;
+            color: #10b981;
+            text-shadow: 0 0 5px #10b981;
+        }
+        .mono-text {
+            font-family: 'Roboto Mono', monospace;
+            color: #6ee7b7;
+        }
+        .animate-glitch {
+            animation: glitch-anim 0.5s infinite alternate;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); text-shadow: 0 0 5px #10b981; }
+            33% { transform: translate(-2px, 2px); text-shadow: 2px -2px 0 #ef4444; }
+            66% { transform: translate(2px, -2px); text-shadow: -2px 2px 0 #3b82f6; }
+            100% { transform: translate(0); text-shadow: 0 0 5px #10b981; }
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center p-4">
+
+    <!-- Contenedor principal de la tarjeta (para PDF y visualización) -->
+    <div id="gafet-content" class="card-container flex flex-col items-center text-center">
+        <!-- Título principal -->
+        <h1 class="text-4xl font-black terminal-text leading-tight mb-2">EXPLORACIONES OBR</h1>
+        <div class="h-0.5 w-full bg-green-500 opacity-70 my-3 shadow-md shadow-[#10b981]/50"></div>
+
+        <!-- Loader inicial -->
+        <div id="loading" class="terminal-text text-xl pt-12">
+            <p>CONECTANDO...</p>
+            <p class="animate-pulse">CARGANDO DATOS ENCRIPTADOS...</p>
+        </div>
+
+        <!-- Contenido del Perfil -->
+        <div id="profile-content" class="hidden w-full flex-grow flex flex-col justify-between">
+            
+            <!-- SECCIÓN SUPERIOR: Foto y Datos -->
+            <div class="w-full flex flex-col items-center">
+                <!-- Foto del Colaborador -->
+                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden">
+                    <img id="profile-photo" src="" alt="Foto de Perfil" class="w-full h-full object-cover">
+                </div>
+
+                <!-- Estado de Activación -->
+                <div class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner">
+                    <p class="text-xs uppercase mono-text">Estado del Perfil</p>
+                    <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 animate-glitch"></p>
+                </div>
+                
+                <!-- Datos del Colaborador -->
+                <div class="mb-4 w-full">
+                    <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-4">Nombre de Operativo</p>
+                    <p id="profile-name" class="text-3xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-1"></p>
+                    
+                    <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-6">Rol de Activo</p>
+                    <p id="profile-role" class="text-2xl font-bold terminal-text leading-tight"></p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN INFERIOR: QR y Registro -->
+            <div class="w-full flex justify-between items-end mt-4">
+                <!-- QR de Validación Dinámico (Se genera aquí) -->
+                <div id="qrcode-container" class="w-24 h-24 rounded-lg shadow-xl bg-white p-1">
+                    <!-- El QR se genera aquí -->
+                </div>
+                
+                <div class="text-right">
+                    <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest">⚠️ ZONA DE ALTO RIESGO</p>
+                    <p class="text-xs mono-text text-gray-400 mt-1">Validación Digital: REQUERIDA</p>
+
+                    <!-- ID de Registro Visible -->
+                    <p class="text-[0.6rem] uppercase mono-text opacity-70 tracking-widest leading-none mt-2">REGISTRO DE ACTIVO:</p>
+                    <p id="profile-id" class="text-sm font-bold mono-text leading-none" style="letter-spacing: 1.5px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido de Error -->
+        <div id="error-content" class="hidden w-full pt-12">
+            <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch">ERROR [404]</p>
+            <p class="text-xl mono-text text-gray-400 mt-4">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p>
+            <p class="text-sm mono-text text-gray-500 mt-2">CONTACTE A SEGURIDAD DE EXPLORACIONES OBR.</p>
+        </div>
+    </div>
+
+    <!-- Botones de acción fuera del diseño del gafete (para PDF y Redes) -->
+    <div id="action-buttons" class="mt-8 w-full max-w-md space-y-3 hidden">
+        <h2 class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
+        
+        <!-- Botón para Descargar Perfil (PDF) -->
+        <button id="download-button" class="w-full py-3 rounded-md terminal-text border border-green-500 bg-green-700/30 hover:bg-green-700/50 transition shadow-md shadow-[#10b981]/50">
+            <span class="mono-text font-bold">Descargar Perfil (PDF)</span>
+        </button>
+        
+        <!-- Botones de Redes Sociales -->
+        <a id="btn-social-1" href="#" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
+            <span class="mono-text">Red Social 1</span>
+        </a>
+        <a id="btn-social-2" href="#" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
+            <span class="mono-text">Red Social 2</span>
+        </a>
+        <a id="btn-social-3" href="#" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
+            <span class="mono-text">Red Social 3</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script>
+        // =========================================================================================================
+        // 🚨 PASO CRÍTICO: REEMPLAZA ESTA LÍNEA 🚨
+        // Coloca aquí la URL que te dio SheetDB o Sheety al enlazar tu Google Sheet.
+        // Debe ser la URL base de tu API, NO la URL de la hoja de cálculo.
+        const API_ENDPOINT = 'TU_ENDPOINT_AQUI'; 
+        // =========================================================================================================
+
+        // Elementos del DOM
+        const loadingEl = document.getElementById('loading');
+        const profileContentEl = document.getElementById('profile-content');
+        const errorContentEl = document.getElementById('error-content');
+        const actionButtonsEl = document.getElementById('action-buttons');
+        
+        const profilePhotoEl = document.getElementById('profile-photo');
+        const profileStatusEl = document.getElementById('profile-status');
+        const profileNameEl = document.getElementById('profile-name');
+        const profileRoleEl = document.getElementById('profile-role');
+        const profileIdEl = document.getElementById('profile-id');
+        
+        const qrcodeContainerEl = document.getElementById('qrcode-container');
+        const downloadButton = document.getElementById('download-button');
+
+        const socialButtons = [
+            document.getElementById('btn-social-1'),
+            document.getElementById('btn-social-2'),
+            document.getElementById('btn-social-3'),
+        ];
+        
+        // Función para obtener el parámetro 'id' de la URL
+        function getUserIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // Función principal para buscar el perfil
+        async function fetchProfile(id) {
+            loadingEl.classList.remove('hidden');
+            profileContentEl.classList.add('hidden');
+            errorContentEl.classList.add('hidden');
+            actionButtonsEl.classList.add('hidden');
+
+            if (API_ENDPOINT === 'TU_ENDPOINT_AQUI') {
+                console.error("ERROR CRÍTICO: Debes reemplazar 'TU_ENDPOINT_AQUI' con la URL de tu API de Google Sheet.");
+                showError();
+                return;
+            }
+
+            try {
+                // Generamos la URL de búsqueda (SheetDB busca por la columna 'id_colaborador')
+                const url = `${API_ENDPOINT}/search?id_colaborador=${id}`;
+                console.log('Intentando conectar a:', url); // Línea de diagnóstico
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // SheetDB devuelve un array, tomamos el primer resultado
+                const user = data[0]; 
+
+                if (user && user.id_colaborador) {
+                    displayProfile(user);
+                } else {
+                    console.warn(`ID de colaborador no encontrado en la base de datos: ${id}`);
+                    showError();
+                }
+
+            } catch (error) {
+                console.error('Error al conectar con la API o al procesar datos:', error);
+                showError();
+            } finally {
+                loadingEl.classList.add('hidden');
+            }
+        }
+
+        // Función para mostrar los datos
+        function displayProfile(user) {
+            // Asigna los valores del JSON a los elementos
+            profileNameEl.textContent = user.nombre_completo || 'SIN NOMBRE ASIGNADO';
+            profileRoleEl.textContent = user.rol_campo || 'SIN ROL ASIGNADO';
+            profileIdEl.textContent = user.id_colaborador || 'N/A';
+            
+            // Carga la foto
+            const photoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
+            profilePhotoEl.src = photoUrl;
+            
+            // Determina el estado
+            const status = (user.estado || 'INACTIVO').toUpperCase();
+            profileStatusEl.textContent = `ESTE PERFIL ESTÁ ${status}`;
+            
+            // Colores del estado
+            if (status === 'ACTIVO') {
+                profileStatusEl.classList.remove('text-red-400');
+                profileStatusEl.classList.add('text-green-400');
+            } else {
+                profileStatusEl.classList.remove('text-green-400');
+                profileStatusEl.classList.add('text-red-400');
+            }
+            
+            // Genera el QR dinámicamente
+            generateQrCode(window.location.href);
+
+            // Configura los botones de redes sociales
+            configureSocialButtons(user);
+            
+            profileContentEl.classList.remove('hidden');
+            actionButtonsEl.classList.remove('hidden');
+        }
+        
+        // Configuración de botones de redes sociales
+        function configureSocialButtons(user) {
+            const socialLinks = [user.red_social_1, user.red_social_2, user.red_social_3];
+            const defaultNames = ['Instagram', 'Facebook', 'YouTube']; // Nombres por defecto si no se puede parsear la URL
+            
+            socialLinks.forEach((link, index) => {
+                const btn = socialButtons[index];
+                if (link && link.startsWith('http')) {
+                    btn.href = link;
+                    // Intenta poner un nombre basado en la URL
+                    let domainName = defaultNames[index];
+                    try {
+                        const domain = new URL(link).hostname.replace('www.', '').split('.')[0];
+                        domainName = domain.toUpperCase();
+                    } catch (e) { /* Usa el nombre por defecto */ }
+                    
+                    btn.querySelector('span').textContent = `ACCEDER A ${domainName}`;
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+        }
+
+        // Función para mostrar el error
+        function showError() {
+            errorContentEl.classList.remove('hidden');
+        }
+        
+        // Función para generar el QR (usa la librería qrcode.min.js)
+        function generateQrCode(url) {
+            // Limpia el contenedor antes de generar uno nuevo
+            qrcodeContainerEl.innerHTML = '';
+            
+            new QRCode(qrcodeContainerEl, {
+                text: url,
+                width: 80,
+                height: 80,
+                colorDark : "#050505",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+        
+        // Función para descargar como PDF
+        downloadButton.addEventListener('click', function() {
+            const element = document.getElementById('gafet-content');
+            const filename = `GAFETE_${profileIdEl.textContent}.pdf`;
+            
+            // Ocultar botones de acción antes de la descarga para que no aparezcan en el PDF
+            actionButtonsEl.classList.add('hidden');
+            
+            html2pdf(element, {
+                margin: 0.5,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, logging: false, useCORS: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            }).then(() => {
+                // Volver a mostrar los botones después de la descarga
+                actionButtonsEl.classList.remove('hidden');
+            });
+        });
+
+
+        // Ejecución al cargar la página
+        window.onload = function() {
+            const userId = getUserIdFromUrl();
+            if (userId) {
+                fetchProfile(userId);
+            } else {
+                showError();
+            }
+        };
+    </script>
+</body>
+</html>

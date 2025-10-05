@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gafete EXPLORACIONES OBR</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+
+        /* Estilo base de la tarjeta */
+        .id-card {
+            width: 3.5in;
+            height: 5.5in;
+            box-shadow: 0 0 30px rgba(100, 255, 100, 0.6);
+            border: 4px solid #34d399; /* Verde esmeralda para un look más moderno */
+            position: relative;
+            overflow: hidden;
+            background-color: #050505; /* Negro profundo */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Estilo del texto de la terminal (Usando Orbitron para títulos impactantes) */
+        .terminal-text {
+            font-family: 'Orbitron', 'Roboto Mono', monospace;
+            color: #10b981; /* Verde esmeralda */
+            text-shadow: 0 0 8px #10b981;
+        }
+
+        /* Estilo para el texto pequeño de registro */
+        .mono-text {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Simulación de efecto "glitch" */
+        .glitch-border:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid #34d399;
+            animation: flicker 4s infinite alternate;
+            opacity: 0.9;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 0.9; }
+            20%, 24%, 55% { opacity: 1; transform: scale(1.005); }
+            80% { opacity: 0.85; transform: scale(0.995); }
+        }
+
+        /* Contorno para la foto */
+        .photo-frame {
+            border: 3px solid #10b981;
+            box-shadow: 0 0 12px #10b981;
+            background-color: #0d120d;
+        }
+
+        /* Estilo para simular el QR Code */
+        .qr-placeholder {
+            background-image: url('https://placehold.co/100x100/050505/10b981?text=QR');
+            background-size: cover;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-900 flex justify-center items-center p-8 print:p-0" style="min-height: 100vh;">
+
+    <!-- Contenedor principal de la tarjeta -->
+    <div class="id-card glitch-border p-5 shadow-2xl">
+
+        <!-- SECCIÓN SUPERIOR: Título e Identidad -->
+        <div class="text-center w-full">
+            <h1 class="text-4xl font-black terminal-text leading-none">EXPLORACIONES</h1>
+            <h2 class="text-6xl font-black terminal-text leading-none mt-1">OBR</h2>
+            <div class="h-0.5 w-full bg-green-400 opacity-70 my-3 shadow-md shadow-[#10b981]/50"></div>
+        </div>
+
+        <!-- SECCIÓN MEDIA: Foto y Datos Principales -->
+        <div class="flex-grow w-full flex flex-col items-center justify-center -mt-6 mb-4">
+            
+            <!-- Foto del Colaborador -->
+            <div class="w-40 h-48 photo-frame flex items-center justify-center mb-6">
+                <!-- Placeholder para la foto. Reemplazar con la foto real del colaborador -->
+                <p class="mono-text text-sm opacity-50 text-[#10b981]">FOTO ID</p>
+            </div>
+
+            <!-- Información del Colaborador (Centrada) -->
+            <div class="text-center w-full">
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80">NOMBRE</p>
+                <p class="text-3xl font-bold terminal-text border-b-2 border-green-500 pb-1 mt-1 leading-tight">ANA MARTHA LÓPEZ</p>
+
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-4">ROL EN CAMPO</p>
+                <p class="text-2xl font-bold terminal-text pb-1 mt-1 leading-tight">ANALISTA DE CAMPO I</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN INFERIOR: QR, Aviso de Riesgo y Registro -->
+        <div class="w-full">
+            <div class="flex justify-between items-end mt-4">
+                <div class="qr-placeholder w-24 h-24 rounded-lg shadow-xl">
+                    <!-- Espacio para el QR real que enlaza a profile_page.html?id=XXX -->
+                </div>
+                <div class="text-right">
+                    <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest">⚠️ ZONA DE ALTO RIESGO</p>
+                    <p class="text-xs mono-text text-gray-400 mt-1">Validación Digital: REQUERIDA</p>
+
+                    <!-- ID de Registro (Pequeño y visible en la parte inferior) -->
+                    <p class="text-[0.6rem] uppercase mono-text opacity-70 tracking-widest leading-none mt-2">REGISTRO DE ACTIVO:</p>
+                    <p class="text-sm font-bold mono-text leading-none" style="letter-spacing: 1.5px;">**08R-A-7734**</p> <!-- ID Ficticio -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

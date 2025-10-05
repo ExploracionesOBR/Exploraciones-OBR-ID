@@ -10,39 +10,82 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
         
-        body { background-color: #050505; }
+        /* Colores Base */
+        :root {
+            --color-activo: #10b981; /* Verde esmeralda */
+            --color-pausa: #f59e0b; /* Amarillo ámbar */
+            --color-baja: #6b7280; /* Gris */
+            --color-fondo: #050505;
+        }
+
+        body { background-color: var(--color-fondo); }
         
         .card-container {
             /* Estilos del contenedor principal, simula el gafete */
             min-height: 100vh;
-            background-color: #050505;
-            border: 4px solid #34d399;
+            background-color: var(--color-fondo);
+            border: 4px solid var(--color-activo);
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
             padding: 2rem;
             width: 100%;
             max-width: 25rem; /* Ancho similar a un gafete grande */
+            transition: all 0.5s ease;
         }
-
+        
         /* Estilo de la tipografía para terminal/futurista */
         .terminal-text {
             font-family: 'Orbitron', monospace;
-            color: #10b981;
-            text-shadow: 0 0 5px #10b981;
+            color: var(--color-activo);
+            text-shadow: 0 0 5px var(--color-activo);
+            transition: color 0.5s ease, text-shadow 0.5s ease;
         }
         .mono-text {
             font-family: 'Roboto Mono', monospace;
             color: #6ee7b7;
+            transition: color 0.5s ease;
         }
+        
+        /* CLASES ESPECÍFICAS DE ESTADO */
+        .status-pausa {
+            border-color: var(--color-pausa) !important;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.8) !important;
+            animation: pulse-pausa 1s infinite alternate; /* Alerta intermitente */
+        }
+        .status-baja {
+            border-color: var(--color-baja) !important;
+            box-shadow: none !important;
+            filter: grayscale(80%); /* Tono gris */
+        }
+
+        /* Animación de alerta para PAUSA */
+        @keyframes pulse-pausa {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Animación de fallo/interferencia (solo en modo operativo) */
         .animate-glitch {
             animation: glitch-anim 0.5s infinite alternate;
         }
-
         @keyframes glitch-anim {
-            0% { transform: translate(0); text-shadow: 0 0 5px #10b981; }
+            0% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
             33% { transform: translate(-2px, 2px); text-shadow: 2px -2px 0 #ef4444; }
             66% { transform: translate(2px, -2px); text-shadow: -2px 2px 0 #3b82f6; }
-            100% { transform: translate(0); text-shadow: 0 0 5px #10b981; }
+            100% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
         }
+
+        /* Clase para el PDF: Elimina sombras y fondos para impresión limpia */
+        .pdf-mode .terminal-text {
+            text-shadow: none !important;
+        }
+        .pdf-mode .card-container {
+            box-shadow: none !important;
+            border: 4px solid var(--color-activo) !important;
+        }
+        .pdf-mode .bg-green-900\/40 {
+            background-color: transparent !important;
+        }
+
     </style>
 </head>
 <body class="flex justify-center items-center p-4">
@@ -51,7 +94,7 @@
     <div id="gafet-content" class="card-container flex flex-col items-center text-center">
         <!-- Título principal -->
         <h1 class="text-4xl font-black terminal-text leading-tight mb-2">EXPLORACIONES OBR</h1>
-        <div class="h-0.5 w-full bg-green-500 opacity-70 my-3 shadow-md shadow-[#10b981]/50"></div>
+        <div class="h-0.5 w-full bg-green-500 opacity-70 my-3 shadow-md shadow-[#10b981]/50" id="divider"></div>
 
         <!-- Loader inicial -->
         <div id="loading" class="terminal-text text-xl pt-12">
@@ -70,9 +113,9 @@
                 </div>
 
                 <!-- Estado de Activación -->
-                <div class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner">
+                <div id="status-box" class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500">
                     <p class="text-xs uppercase mono-text">Estado del Perfil</p>
-                    <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 animate-glitch"></p>
+                    <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 transition duration-500"></p>
                 </div>
                 
                 <!-- Datos del Colaborador -->
@@ -87,14 +130,15 @@
 
             <!-- SECCIÓN INFERIOR: QR y Registro -->
             <div class="w-full flex justify-between items-end mt-4">
-                <!-- QR de Validación Dinámico (Se genera aquí) -->
-                <div id="qrcode-container" class="w-24 h-24 rounded-lg shadow-xl bg-white p-1">
+                <!-- QR de Validación Dinámico -->
+                <div id="qrcode-container" class="w-24 h-24 rounded-lg shadow-xl bg-white p-1 transition duration-500">
                     <!-- El QR se genera aquí -->
                 </div>
                 
                 <div class="text-right">
-                    <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest">⚠️ ZONA DE ALTO RIESGO</p>
-                    <p class="text-xs mono-text text-gray-400 mt-1">Validación Digital: REQUERIDA</p>
+                    <!-- Mensaje de Validación -->
+                    <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500">⚠️ ZONA DE ALTO RIESGO</p>
+                    <p id="validation-msg" class="text-xs mono-text text-gray-400 mt-1 transition duration-500">Validación Digital: REQUERIDA</p>
 
                     <!-- ID de Registro Visible -->
                     <p class="text-[0.6rem] uppercase mono-text opacity-70 tracking-widest leading-none mt-2">REGISTRO DE ACTIVO:</p>
@@ -115,30 +159,30 @@
     <div id="action-buttons" class="mt-8 w-full max-w-md space-y-3 hidden">
         <h2 class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
         
-        <!-- Botón para Descargar Perfil (PDF) -->
-        <button id="download-button" class="w-full py-3 rounded-md terminal-text border border-green-500 bg-green-700/30 hover:bg-green-700/50 transition shadow-md shadow-[#10b981]/50">
-            <span class="mono-text font-bold">Descargar Perfil (PDF)</span>
+        <!-- Botón para Descargar Perfil (PDF) - Solo visible en modo ADMIN -->
+        <button id="download-button" class="w-full py-3 rounded-md terminal-text border border-green-500 bg-green-700/30 hover:bg-green-700/50 transition shadow-md shadow-[#10b981]/50 hidden">
+            <span class="mono-text font-bold">DESCARGAR GAFETE PROTOCOLARIO (PDF)</span>
         </button>
         
-        <!-- Botones de Redes Sociales -->
-        <a id="btn-social-1" href="#" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
-            <span class="mono-text">Red Social 1</span>
-        </a>
-        <a id="btn-social-2" href="#" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
-            <span class="mono-text">Red Social 2</span>
-        </a>
-        <a id="btn-social-3" href="#" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
-            <span class="mono-text">Red Social 3</span>
-        </a>
+        <!-- Botones de Redes Sociales Fijas (Visibles solo si el estado es ACTIVO) -->
+        <div id="social-buttons-container" class="space-y-3">
+            <a id="btn-tiktok" href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
+                <span class="mono-text">VISITAR TIKTOK</span>
+            </a>
+            <a id="btn-facebook" href="https://www.facebook.com/people/Exploraciones-OBR/61580725413198/" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
+                <span class="mono-text">VISITAR FACEBOOK</span>
+            </a>
+            <a id="btn-youtube" href="https://www.youtube.com/@EXPLORACIONESOBR" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
+                <span class="mono-text">VISITAR YOUTUBE</span>
+            </a>
+        </div>
     </div>
 
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script>
         // =========================================================================================================
         // 🚨 PASO CRÍTICO: REEMPLAZA ESTA LÍNEA 🚨
-        // Coloca aquí la URL que te dio SheetDB o Sheety al enlazar tu Google Sheet.
-        // Debe ser la URL base de tu API, NO la URL de la hoja de cálculo.
-        const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
+        const API_ENDPOINT = 'TU_ENDPOINT_AQUI'; 
         // =========================================================================================================
 
         // Elementos del DOM
@@ -146,8 +190,9 @@
         const profileContentEl = document.getElementById('profile-content');
         const errorContentEl = document.getElementById('error-content');
         const actionButtonsEl = document.getElementById('action-buttons');
+        const gafetContentEl = document.getElementById('gafet-content');
+        const statusBoxEl = document.getElementById('status-box');
         
-        const profilePhotoEl = document.getElementById('profile-photo');
         const profileStatusEl = document.getElementById('profile-status');
         const profileNameEl = document.getElementById('profile-name');
         const profileRoleEl = document.getElementById('profile-role');
@@ -155,17 +200,17 @@
         
         const qrcodeContainerEl = document.getElementById('qrcode-container');
         const downloadButton = document.getElementById('download-button');
+        const validationMsgEl = document.getElementById('validation-msg');
+        const riskMsgEl = document.getElementById('risk-msg');
+        const socialButtonsContainer = document.getElementById('social-buttons-container');
 
-        const socialButtons = [
-            document.getElementById('btn-social-1'),
-            document.getElementById('btn-social-2'),
-            document.getElementById('btn-social-3'),
-        ];
-        
-        // Función para obtener el parámetro 'id' de la URL
-        function getUserIdFromUrl() {
+        // Función para obtener el parámetro 'id' y 'mode' de la URL
+        function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
-            return params.get('id');
+            return {
+                id: params.get('id'),
+                mode: params.get('mode')
+            };
         }
 
         // Función principal para buscar el perfil
@@ -182,14 +227,12 @@
             }
 
             try {
-                // Generamos la URL de búsqueda (SheetDB busca por la columna 'id_colaborador')
                 const url = `${API_ENDPOINT}/search?id_colaborador=${id}`;
-                console.log('Intentando conectar a:', url); // Línea de diagnóstico
+                console.log('Intentando conectar a:', url);
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                // SheetDB devuelve un array, tomamos el primer resultado
                 const user = data[0]; 
 
                 if (user && user.id_colaborador) {
@@ -207,63 +250,94 @@
             }
         }
 
+        // Función para aplicar estilos basados en el estado
+        function applyStatusStyles(status, isProtocolario = false) {
+            // Limpia estilos previos
+            gafetContentEl.classList.remove('status-pausa', 'status-baja');
+            statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500');
+            profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch');
+            profileStatusEl.classList.add('terminal-text');
+            gafetContentEl.style.borderColor = 'var(--color-activo)';
+            gafetContentEl.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.6)';
+            
+            // Lógica de visualización
+            if (status === 'PAUSA') {
+                gafetContentEl.classList.add('status-pausa');
+                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : "ESTE PERFIL ESTÁ PAUSA";
+                
+                // Estilo visual de alerta
+                statusBoxEl.classList.add('bg-yellow-900/40', 'border-yellow-500');
+                profileStatusEl.classList.add('text-yellow-400');
+            } else if (status === 'ELIMINADO') { // CAMBIO: DADO DE BAJA -> ELIMINADO
+                gafetContentEl.classList.add('status-baja');
+                profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : "ESTE PERFIL ESTÁ ELIMINADO";
+                
+                // Estilo visual de baja (gris)
+                statusBoxEl.classList.add('bg-gray-900/40', 'border-gray-500');
+                profileStatusEl.classList.remove('terminal-text');
+                profileStatusEl.classList.add('text-gray-400');
+            } else { // ACTIVO
+                profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : "ESTE PERFIL ESTÁ ACTIVO";
+                
+                // Estilo visual activo (verde)
+                statusBoxEl.classList.add('bg-green-900/40', 'border-green-500');
+                profileStatusEl.classList.add(isProtocolario ? '' : 'animate-glitch');
+            }
+        }
+
         // Función para mostrar los datos
         function displayProfile(user) {
-            // Asigna los valores del JSON a los elementos
+            const params = getUrlParams();
+            
+            // Asigna los valores del JSON
             profileNameEl.textContent = user.nombre_completo || 'SIN NOMBRE ASIGNADO';
             profileRoleEl.textContent = user.rol_campo || 'SIN ROL ASIGNADO';
             profileIdEl.textContent = user.id_colaborador || 'N/A';
             
             // Carga la foto
             const photoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
-            profilePhotoEl.src = photoUrl;
+            document.getElementById('profile-photo').src = photoUrl;
             
-            // Determina el estado
-            const status = (user.estado || 'INACTIVO').toUpperCase();
-            profileStatusEl.textContent = `ESTE PERFIL ESTÁ ${status}`;
+            // Normaliza el estado (ACTIVO, PAUSA, ELIMINADO)
+            const status = (user.estado || 'ELIMINADO').toUpperCase();
             
-            // Colores del estado
-            if (status === 'ACTIVO') {
-                profileStatusEl.classList.remove('text-red-400');
-                profileStatusEl.classList.add('text-green-400');
-            } else {
-                profileStatusEl.classList.remove('text-green-400');
-                profileStatusEl.classList.add('text-red-400');
-            }
+            // Aplica estilos en modo operativo (default)
+            applyStatusStyles(status, false);
             
-            // Genera el QR dinámicamente
-            generateQrCode(window.location.href);
+            // Elementos visibles en modo operativo
+            qrcodeContainerEl.classList.remove('hidden');
+            validationMsgEl.textContent = 'Validación Digital: REQUERIDA';
+            riskMsgEl.classList.remove('hidden');
 
-            // Configura los botones de redes sociales
-            configureSocialButtons(user);
+            // Genera el QR dinámicamente
+            // Crea una URL limpia (sin &mode=admin) para el QR, de modo que el QR no revele el modo de descarga
+            const cleanUrl = window.location.href.split('?')[0] + '?id=' + user.id_colaborador;
+            generateQrCode(cleanUrl);
+
+            // Controla la visibilidad de botones de descarga y redes sociales
+            configureActionButtons(status, params.mode);
             
             profileContentEl.classList.remove('hidden');
             actionButtonsEl.classList.remove('hidden');
         }
         
-        // Configuración de botones de redes sociales
-        function configureSocialButtons(user) {
-            const socialLinks = [user.red_social_1, user.red_social_2, user.red_social_3];
-            const defaultNames = ['Instagram', 'Facebook', 'YouTube']; // Nombres por defecto si no se puede parsear la URL
-            
-            socialLinks.forEach((link, index) => {
-                const btn = socialButtons[index];
-                if (link && link.startsWith('http')) {
-                    btn.href = link;
-                    // Intenta poner un nombre basado en la URL
-                    let domainName = defaultNames[index];
-                    try {
-                        const domain = new URL(link).hostname.replace('www.', '').split('.')[0];
-                        domainName = domain.toUpperCase();
-                    } catch (e) { /* Usa el nombre por defecto */ }
-                    
-                    btn.querySelector('span').textContent = `ACCEDER A ${domainName}`;
-                    btn.classList.remove('hidden');
-                } else {
-                    btn.classList.add('hidden');
-                }
-            });
+        // Controla la visibilidad de botones de descarga y redes sociales
+        function configureActionButtons(status, mode) {
+            // Mostrar botón de descarga SOLO si el modo es 'admin'
+            if (mode === 'admin') {
+                downloadButton.classList.remove('hidden');
+            } else {
+                downloadButton.classList.add('hidden');
+            }
+
+            // Ocultar botones de redes sociales si el estado es PAUSA o ELIMINADO
+            if (status === 'PAUSA' || status === 'ELIMINADO') {
+                socialButtonsContainer.classList.add('hidden');
+            } else {
+                socialButtonsContainer.classList.remove('hidden');
+            }
         }
+
 
         // Función para mostrar el error
         function showError() {
@@ -272,27 +346,37 @@
         
         // Función para generar el QR (usa la librería qrcode.min.js)
         function generateQrCode(url) {
-            // Limpia el contenedor antes de generar uno nuevo
             qrcodeContainerEl.innerHTML = '';
-            
             new QRCode(qrcodeContainerEl, {
                 text: url,
                 width: 80,
                 height: 80,
-                colorDark : "#050505",
+                colorDark : "var(--color-fondo)",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
         }
         
-        // Función para descargar como PDF
+        // Función para descargar como PDF (MODO PROTOCOLARIO)
         downloadButton.addEventListener('click', function() {
             const element = document.getElementById('gafet-content');
-            const filename = `GAFETE_${profileIdEl.textContent}.pdf`;
+            const filename = `GAFETE_PROTOCOLARIO_${profileIdEl.textContent}.pdf`;
             
-            // Ocultar botones de acción antes de la descarga para que no aparezcan en el PDF
-            actionButtonsEl.classList.add('hidden');
-            
+            // 1. Obtiene el estado actual (siempre ACTIVO/PAUSA/ELIMINADO)
+            const currentStatusText = profileStatusEl.textContent;
+            const originalStatus = currentStatusText.includes('ACTIVO') ? 'ACTIVO' : currentStatusText.includes('PAUSA') ? 'PAUSA' : 'ELIMINADO';
+
+            // 2. Aplica estilos de modo protocolo para la impresión:
+            gafetContentEl.classList.add('pdf-mode'); 
+            qrcodeContainerEl.classList.add('hidden'); 
+            riskMsgEl.classList.add('hidden'); 
+            validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Mensaje de validación
+            actionButtonsEl.classList.add('hidden'); // Ocultar todos los botones de acción
+
+            // Aplica estilos de estado para el modo Protocolario (sin glitch, sin pulso)
+            applyStatusStyles(originalStatus, true);
+
+            // 3. Genera el PDF
             html2pdf(element, {
                 margin: 0.5,
                 filename: filename,
@@ -300,17 +384,25 @@
                 html2canvas: { scale: 3, logging: false, useCORS: true },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             }).then(() => {
-                // Volver a mostrar los botones después de la descarga
+                // 4. Revierte al modo Operativo original (después de la descarga)
+                gafetContentEl.classList.remove('pdf-mode');
+                qrcodeContainerEl.classList.remove('hidden');
+                riskMsgEl.classList.remove('hidden');
+                validationMsgEl.textContent = 'Validación Digital: REQUERIDA';
                 actionButtonsEl.classList.remove('hidden');
+                
+                // Revierte los estilos de estado y visibilidad de botones al modo operativo
+                applyStatusStyles(originalStatus, false);
+                configureActionButtons(originalStatus, getUrlParams().mode);
             });
         });
 
 
         // Ejecución al cargar la página
         window.onload = function() {
-            const userId = getUserIdFromUrl();
-            if (userId) {
-                fetchProfile(userId);
+            const { id } = getUrlParams();
+            if (id) {
+                fetchProfile(id);
             } else {
                 showError();
             }

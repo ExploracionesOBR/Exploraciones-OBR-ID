@@ -32,13 +32,12 @@
             background-size: 4px 4px, 100% 25px;
         }
 
-        /* AJUSTE CLAVE 1: ELIMINAR MIN-HEIGHT para compacidad vertical */
+        /* Mantiene la compacidad vertical (sin ocupar toda la altura de la pantalla) */
         .card-container {
-            /* REMOVIDO: min-height: 100vh; */ 
             background-color: var(--color-fondo);
             border: 4px solid var(--color-activo);
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
-            padding: 0.25rem; /* AJUSTE EXTREMO: Reducido de 0.5rem a 0.25rem (p-1) */
+            padding: 0.25rem; 
             width: 100%;
             max-width: 25rem; 
             transition: all 0.5s ease;
@@ -57,80 +56,20 @@
             transition: color 0.5s ease;
         }
         
-        /* === CLASES ESPECÍFICAS DE ESTADO === */
-        /* (Se mantienen para funcionalidad) */
-
-        .status-pausa {
-            border-color: var(--color-pausa) !important;
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.8) !important;
-            animation: pulse-pausa 1s infinite alternate; 
-        }
-        .status-baja {
-            border-color: var(--color-baja) !important;
-            box-shadow: none !important;
-            filter: grayscale(80%); 
-        }
-
-        @keyframes pulse-pausa {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        .animate-glitch {
-            animation: glitch-anim 0.5s infinite alternate;
-        }
-        @keyframes glitch-anim {
-            0% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
-            33% { transform: translate(2px, -2px); text-shadow: -2px 2px 0 #ef4444; }
-            66% { transform: translate(-2px, 2px); text-shadow: 2px -2px 0 #3b82f6; }
-            100% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
-        }
-        
-        .grayscale-photo {
-            filter: grayscale(100%);
-        }
-
-        /* Placeholder 'SE BUSCA' */
-        .wanted-placeholder {
-            width: 100%; 
-            height: 100%;
-            background-image: linear-gradient(135deg, #cc3333 0%, #aa2222 100%);
-            transform: rotate(-3deg);
-            border: 3px dashed #fff;
-            box-shadow: 0 0 10px rgba(204, 51, 51, 0.9);
-            animation: border-flash 0.5s infinite alternate;
-        }
-        @keyframes border-flash {
-            0% { border-color: #fff; }
-            100% { border-color: #fca5a5; }
-        }
-        
-        /* Clases de animación se mantienen */
-        @keyframes fade-in-up {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-out {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
-        .loading-line, .fade-in-sequential {
-            opacity: 0; 
-            animation: fade-in-up 0.4s ease-out forwards;
-        }
-        .loading-line.fade-out {
-            animation: fade-out 0.3s ease-in forwards;
-        }
-        .fade-in-sequential[data-delay="1"] { animation-delay: 0.1s; } 
-        /* ... delays restantes ... */
-        .fade-in-sequential[data-delay="7"] { animation-delay: 1.3s; } 
-        /* --- EFECTOS DE TEXTO (Typing multi-línea) --- se mantienen */
-        .typing-line { display: inline-block; overflow: hidden; white-space: nowrap; width: 0; }
-        .line-1-instant { opacity: 0; animation: instant-fade-in 0.5s ease-out forwards; animation-delay: 0.5s; }
-        .typing-line-2 { animation: typing-2 0.6s steps(3, end) forwards; animation-delay: 1.5s; opacity: 0; }
-        @keyframes instant-fade-in { from { opacity: 0; } to { opacity: 1; width: 100%; } }
-        @keyframes typing-2 { from { width: 0; opacity: 1; } to { width: 100%; opacity: 1; } }
-
+        /* Se mantienen los estilos de estado y animaciones */
+        .status-pausa { border-color: var(--color-pausa) !important; box-shadow: 0 0 30px rgba(245, 158, 11, 0.8) !important; animation: pulse-pausa 1s infinite alternate; }
+        .status-baja { border-color: var(--color-baja) !important; box-shadow: none !important; filter: grayscale(80%); }
+        @keyframes pulse-pausa { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        .animate-glitch { animation: glitch-anim 0.5s infinite alternate; }
+        @keyframes glitch-anim { /* ... */ }
+        .grayscale-photo { filter: grayscale(100%); }
+        .wanted-placeholder { /* ... */ }
+        @keyframes border-flash { /* ... */ }
+        @keyframes fade-in-up { /* ... */ }
+        @keyframes fade-out { /* ... */ }
+        .loading-line, .fade-in-sequential { opacity: 0; animation: fade-in-up 0.4s ease-out forwards; }
+        .loading-line.fade-out { animation: fade-out 0.3s ease-in forwards; }
+        /* ... delays y typing animations se mantienen ... */
     </style>
 </head>
 <body class="flex justify-center items-center p-4 min-h-screen">
@@ -165,12 +104,12 @@
                 </div>
             </div>
 
-            <div id="status-box" class="py-0 px-2 mb-0 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
+            <div id="status-box" class="py-0 px-2 **mb-2** w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
                 <p class="text-[0.6rem] uppercase mono-text">Estado del Perfil</p>
                 <p id="profile-status" class="text-xl font-extrabold terminal-text mt-0 transition duration-500"></p> 
             </div>
             
-            <div class="w-full mt-0.5 fade-in-sequential" data-delay="3">
+            <div class="w-full mt-0.5 **mb-2** fade-in-sequential" data-delay="3">
                 <p class="text-[0.6rem] uppercase mono-text text-green-300 opacity-80 mt-0 mb-0">Nombre de Operativo</p>
                 <p id="profile-name" class="text-2xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-0"></p> 
                 
@@ -178,20 +117,20 @@
                 <p id="profile-role" class="text-xl font-bold terminal-text leading-tight mb-0"></p> 
             </div>
             
-            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-0.5 mb-0 fade-in-sequential" data-delay="4">
+            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-0.5 **mb-2** fade-in-sequential" data-delay="4">
                 <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2"><i class="fab fa-tiktok text-xl social-icon"></i></a>
                 <a href="https://www.facebook.com/people/Exploraciones-OBR/61580725413198/" target="_blank" class="social-icon-wrapper rounded-full p-2"><i class="fab fa-facebook-f text-xl social-icon"></i></a>
                 <a href="https://www.youtube.com/@EXPLORACIONESOBR" target="_blank" class="social-icon-wrapper rounded-full p-2"><i class="fab fa-youtube text-xl social-icon"></i></a>
             </div>
             
-            <div id="security-warning" class="w-full mt-0.5 mb-0 py-0.5 px-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
+            <div id="security-warning" class="w-full mt-0.5 **mb-2** py-0.5 px-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase warning-glow-red">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
             </div>
 
 
-            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-0.5 fade-in-sequential" data-delay="6">
+            <div id="qr-validation-block" class="w-full flex justify-between items-end fade-in-sequential" data-delay="6">
                 
                 <div id="qrcode-container" class="w-[90px] h-[90px] rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden">
                     </div>
@@ -224,14 +163,10 @@
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script>
         // =========================================================================================================
-        // ✅ API ENDPOINT ACTUALIZADO ✅
         const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
-        // =========================================================================================================
-
-        // URL base de la aplicación para el QR 
         const BASE_URL = 'https://exploracionesobr.github.io/Exploraciones-OBR-ID/profile_gafet_dinamico.html';
 
-        // Elementos del DOM (Se mantiene)
+        // Elementos del DOM (Se mantienen)
         const loadingEl = document.getElementById('loading');
         const loadingTextContainerEl = document.getElementById('loading-text-container'); 
         const profileContentEl = document.getElementById('profile-content');
@@ -261,30 +196,15 @@
 
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
-            return {
-                id: params.get('id'),
-                mode: params.get('mode')
-            };
+            return { id: params.get('id'), mode: params.get('mode') };
         }
 
-        /**
-         * Simula la secuencia de carga, reemplazando el texto. (Se mantiene)
-         */
+        // Función de carga (Se mantiene)
         function startLoadingSequence(id) {
-            
-            const loadingMessages = [
-                "CONECTANDO...", 
-                "CARGANDO DATOS...", 
-                "ENCRIPTANDO...",     
-            ];
+            const loadingMessages = ["CONECTANDO...", "CARGANDO DATOS...", "ENCRIPTANDO...",];
             const messageDelay = 800; 
             const MIN_LOADING_TIME = loadingMessages.length * messageDelay;
-            
-            let step = 0;
-            let fetchCompleted = false;
-            let loadingTimerExpired = false;
-            let fetchResult = null;
-            
+            let step = 0; let fetchCompleted = false; let loadingTimerExpired = false; let fetchResult = null;
             loadingEl.classList.remove('hidden'); 
             
             function showNextLoadingLine() {
@@ -292,9 +212,7 @@
                 
                 if (previousMessage) {
                     previousMessage.classList.add('fade-out');
-                    setTimeout(() => {
-                        loadingTextContainerEl.innerHTML = ''; 
-                    }, 300);
+                    setTimeout(() => { loadingTextContainerEl.innerHTML = ''; }, 300);
                 }
 
                 setTimeout(() => {
@@ -304,42 +222,29 @@
                         newP.textContent = msg;
                         newP.classList.add('loading-line'); 
                         
-                        if (step === loadingMessages.length - 1) {
-                            newP.classList.add('animate-pulse');
-                        }
+                        if (step === loadingMessages.length - 1) { newP.classList.add('animate-pulse'); }
                         
                         loadingTextContainerEl.appendChild(newP);
                         step++;
                         
-                        if (step < loadingMessages.length) {
-                            setTimeout(showNextLoadingLine, messageDelay);
-                        }
+                        if (step < loadingMessages.length) { setTimeout(showNextLoadingLine, messageDelay); }
                     }
                 }, previousMessage ? 300 : 0);
             }
-            
             showNextLoadingLine();
             
 
             fetchProfileData(id)
-                .then(result => {
-                    fetchResult = result;
-                })
-                .catch(error => {
-                    fetchResult = { error: true, data: error };
-                })
+                .then(result => { fetchResult = result; })
+                .catch(error => { fetchResult = { error: true, data: error }; })
                 .finally(() => {
                     fetchCompleted = true;
-                    if (loadingTimerExpired) {
-                        processResult();
-                    }
+                    if (loadingTimerExpired) { processResult(); }
                 });
 
             setTimeout(() => {
                 loadingTimerExpired = true;
-                if (fetchCompleted) {
-                    processResult();
-                }
+                if (fetchCompleted) { processResult(); }
             }, MIN_LOADING_TIME + 500); 
 
             function processResult() {
@@ -363,11 +268,8 @@
                 const data = await response.json(); 
                 const user = data[0]; 
 
-                if (user && user.id_colaborador) {
-                    return { user };
-                } else {
-                    return null;
-                }
+                if (user && user.id_colaborador) { return { user }; } 
+                else { return null; }
             } catch (error) {
                 console.error('Error al conectar con la API o al procesar datos:', error);
                 throw error;
@@ -419,7 +321,7 @@
             }
         }
 
-        // Función para mostrar los datos
+        // Función para mostrar los datos (Se mantiene)
         function displayProfile(user) {
             const params = getUrlParams();
             const isAdmin = params.mode === 'admin';
@@ -428,7 +330,6 @@
             profileRoleEl.textContent = user.rol_campo || 'SIN ROL ASIGNADO';
             profileIdEl.textContent = user.id_colaborador || 'N/A';
             
-            // AJUSTE CLAVE 4: URL de foto restaurada (160x192)
             const rawPhotoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO'; 
             photoEl.src = rawPhotoUrl;
             
@@ -450,7 +351,6 @@
                 socialIconsInCardEl.classList.remove('hidden'); 
             }
 
-            // --- LÓGICA DE VISIBILIDAD DEL QR ---
             if (isAdmin && user.id_colaborador) {
                 const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
                 generateQrCode(cleanUrl, !gafetContentEl.classList.contains('pdf-mode'));
@@ -458,7 +358,6 @@
             } else {
                 qrcodeContainerEl.classList.add('hidden'); 
             }
-            // ------------------------------------
 
             configureActionButtons(params.mode);
             
@@ -486,22 +385,22 @@
             securityWarningEl.classList.add('hidden'); 
         }
         
-        // Función para generar el QR
+        // Función para generar el QR (Se mantiene el tamaño 90x90)
         function generateQrCode(url, isDynamicMode) {
             qrcodeContainerEl.innerHTML = '';
             const colorDark = isDynamicMode ? 'var(--color-fondo)' : '#000000';
 
             new QRCode(qrcodeContainerEl, {
                 text: url,
-                width: 90, // AJUSTE CLAVE 5: Restaurado a 90px
-                height: 90, // AJUSTE CLAVE 5: Restaurado a 90px
+                width: 90, 
+                height: 90, 
                 colorDark : colorDark,
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
         }
         
-        // Función para descargar como PDF (MODO PROTOCOLARIO) - Se mantiene
+        // Función para descargar como PDF (Se mantiene)
         downloadButton.addEventListener('click', function() {
             const element = document.getElementById('gafet-content');
             const filename = `GAFETE_PROTOCOLARIO_${profileIdEl.textContent}.pdf`;

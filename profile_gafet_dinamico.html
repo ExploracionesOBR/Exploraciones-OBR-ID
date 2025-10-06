@@ -7,6 +7,8 @@
     <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Font Awesome para los iconos de redes sociales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDkGkXJEDoXekD6+l9sN+z5kQ7s/Q7Z6q08e+k7E+h7D/0f/E0A2A5Z7tY3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
         
@@ -74,6 +76,11 @@
             100% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
         }
 
+        /* Clase para la foto en B&W */
+        .grayscale-photo {
+            filter: grayscale(100%);
+        }
+
         /* Clase para el PDF: Elimina sombras y fondos para impresión limpia */
         .pdf-mode .terminal-text {
             text-shadow: none !important;
@@ -84,6 +91,33 @@
         }
         .pdf-mode .bg-green-900\/40 {
             background-color: transparent !important;
+        }
+
+        /* Placeholder 'SE BUSCA' */
+        .wanted-placeholder {
+            background-image: linear-gradient(135deg, #cc3333 0%, #aa2222 100%);
+            transform: rotate(-3deg);
+            border: 3px dashed #fff;
+            box-shadow: 0 0 10px rgba(204, 51, 51, 0.9);
+            animation: border-flash 0.5s infinite alternate;
+        }
+        @keyframes border-flash {
+            0% { border-color: #fff; }
+            100% { border-color: #fca5a5; }
+        }
+        
+        /* Estilos específicos para iconos de redes sociales */
+        .social-icon-wrapper {
+            background-color: transparent; /* No queremos fondo blanco */
+            border: 1px solid var(--color-activo);
+            transition: all 0.3s ease;
+        }
+        .social-icon-wrapper:hover {
+            background-color: rgba(16, 185, 129, 0.1); /* Ligero hover */
+        }
+        .social-icon {
+            color: var(--color-activo);
+            text-shadow: 0 0 5px var(--color-activo);
         }
 
     </style>
@@ -107,14 +141,21 @@
             
             <!-- SECCIÓN SUPERIOR: Foto y Datos -->
             <div class="w-full flex flex-col items-center">
-                <!-- Foto del Colaborador -->
+                
+                <!-- Marco de la Foto (Contenedor para aplicar filtros o reemplazo) -->
                 <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden">
-                    <img id="profile-photo" src="" alt="Foto de Perfil" class="w-full h-full object-cover">
+                    <!-- Foto Normal (Visible en ACTIVO y PAUSA) -->
+                    <img id="profile-photo" src="" alt="Foto de Perfil" class="w-full h-full object-cover transition duration-500">
+                    <!-- Placeholder "SE BUSCA" (Visible solo en ELIMINADO) -->
+                    <div id="wanted-placeholder" class="w-full h-full wanted-placeholder absolute flex items-center justify-center hidden">
+                        <span class="text-3xl font-black terminal-text text-white transform rotate-12">SE BUSCA</span>
+                    </div>
                 </div>
 
                 <!-- Estado de Activación -->
                 <div id="status-box" class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500">
                     <p class="text-xs uppercase mono-text">Estado del Perfil</p>
+                    <!-- Muestra solo el estado de la hoja de cálculo (ACTIVO, PAUSA, ELIMINADO) -->
                     <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 transition duration-500"></p>
                 </div>
                 
@@ -128,14 +169,17 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN INFERIOR: QR y Registro -->
-            <div class="w-full flex justify-between items-end mt-4">
-                <!-- QR de Validación Dinámico -->
+            <!-- SECCIÓN INFERIOR: QR, Registro e ICONOS DE REDES SOCIALES -->
+            <!-- Esta sección se oculta si es PAUSA o ELIMINADO -->
+            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-4">
+                
+                <!-- QR de Validación Dinámico (Izquierda) -->
                 <div id="qrcode-container" class="w-24 h-24 rounded-lg shadow-xl bg-white p-1 transition duration-500">
                     <!-- El QR se genera aquí -->
                 </div>
                 
-                <div class="text-right">
+                <!-- Bloque de Validación/ID (Derecha) -->
+                <div id="id-and-validation-block" class="text-right">
                     <!-- Mensaje de Validación -->
                     <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500">⚠️ ZONA DE ALTO RIESGO</p>
                     <p id="validation-msg" class="text-xs mono-text text-gray-400 mt-1 transition duration-500">Validación Digital: REQUERIDA</p>
@@ -145,6 +189,24 @@
                     <p id="profile-id" class="text-sm font-bold mono-text leading-none" style="letter-spacing: 1.5px;"></p>
                 </div>
             </div>
+
+            <!-- NUEVO BLOQUE: ICONOS DE REDES SOCIALES (Aparece al final de la tarjeta cuando es ACTIVO) -->
+            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-8">
+                <!-- TikTok -->
+                <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2">
+                    <i class="fab fa-tiktok text-2xl social-icon"></i>
+                </a>
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/people/Exploraciones-OBR/61580725413198/" target="_blank" class="social-icon-wrapper rounded-full p-2">
+                    <i class="fab fa-facebook-f text-2xl social-icon"></i>
+                </a>
+                <!-- YouTube -->
+                <a href="https://www.youtube.com/@EXPLORACIONESOBR" target="_blank" class="social-icon-wrapper rounded-full p-2">
+                    <i class="fab fa-youtube text-2xl social-icon"></i>
+                </a>
+            </div>
+            <!-- FIN NUEVO BLOQUE -->
+
         </div>
 
         <!-- Contenido de Error -->
@@ -155,34 +217,23 @@
         </div>
     </div>
 
-    <!-- Botones de acción fuera del diseño del gafete (para PDF y Redes) -->
+    <!-- Bloque de botones de acción antiguo (solo para modo ADMIN) -->
     <div id="action-buttons" class="mt-8 w-full max-w-md space-y-3 hidden">
-        <h2 class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
+        <h2 id="action-buttons-header" class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
         
         <!-- Botón para Descargar Perfil (PDF) - Solo visible en modo ADMIN -->
         <button id="download-button" class="w-full py-3 rounded-md terminal-text border border-green-500 bg-green-700/30 hover:bg-green-700/50 transition shadow-md shadow-[#10b981]/50 hidden">
             <span class="mono-text font-bold">DESCARGAR GAFETE PROTOCOLARIO (PDF)</span>
         </button>
         
-        <!-- Botones de Redes Sociales Fijas (Visibles solo si el estado es ACTIVO) -->
-        <div id="social-buttons-container" class="space-y-3">
-            <a id="btn-tiktok" href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
-                <span class="mono-text">VISITAR TIKTOK</span>
-            </a>
-            <a id="btn-facebook" href="https://www.facebook.com/people/Exploraciones-OBR/61580725413198/" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
-                <span class="mono-text">VISITAR FACEBOOK</span>
-            </a>
-            <a id="btn-youtube" href="https://www.youtube.com/@EXPLORACIONESOBR" target="_blank" class="w-full inline-block py-3 rounded-md terminal-text border border-[#10b981] bg-transparent hover:bg-green-700/30 transition shadow-md shadow-[#10b981]/50 text-center">
-                <span class="mono-text">VISITAR YOUTUBE</span>
-            </a>
-        </div>
+        <!-- Los botones de redes sociales en el bloque de acciones se eliminan, ya que se movieron a la credencial. -->
     </div>
 
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script>
         // =========================================================================================================
         // 🚨 PASO CRÍTICO: REEMPLAZA ESTA LÍNEA 🚨
-        const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
+        const API_ENDPOINT = 'TU_ENDPOINT_AQUI'; 
         // =========================================================================================================
 
         // Elementos del DOM
@@ -198,11 +249,20 @@
         const profileRoleEl = document.getElementById('profile-role');
         const profileIdEl = document.getElementById('profile-id');
         
+        const photoEl = document.getElementById('profile-photo');
+        const wantedPlaceholderEl = document.getElementById('wanted-placeholder');
+        const qrValidationBlockEl = document.getElementById('qr-validation-block'); // Contenedor del QR e ID
         const qrcodeContainerEl = document.getElementById('qrcode-container');
+        const idAndValidationBlockEl = document.getElementById('id-and-validation-block');
         const downloadButton = document.getElementById('download-button');
         const validationMsgEl = document.getElementById('validation-msg');
         const riskMsgEl = document.getElementById('risk-msg');
-        const socialButtonsContainer = document.getElementById('social-buttons-container');
+        // const socialButtonsContainer = document.getElementById('social-buttons-container'); // Ya no existe
+        const actionButtonsHeader = document.getElementById('action-buttons-header');
+        
+        // Nuevo elemento para los iconos de redes sociales dentro de la tarjeta
+        const socialIconsInCardEl = document.getElementById('social-icons-in-card');
+
 
         // Función para obtener el parámetro 'id' y 'mode' de la URL
         function getUrlParams() {
@@ -219,6 +279,7 @@
             profileContentEl.classList.add('hidden');
             errorContentEl.classList.add('hidden');
             actionButtonsEl.classList.add('hidden');
+            socialIconsInCardEl.classList.add('hidden'); // Ocultar por defecto
 
             if (API_ENDPOINT === 'TU_ENDPOINT_AQUI') {
                 console.error("ERROR CRÍTICO: Debes reemplazar 'TU_ENDPOINT_AQUI' con la URL de tu API de Google Sheet.");
@@ -252,32 +313,44 @@
 
         // Función para aplicar estilos basados en el estado
         function applyStatusStyles(status, isProtocolario = false) {
-            // Limpia estilos previos
+            // Limpia estilos y filtros
             gafetContentEl.classList.remove('status-pausa', 'status-baja');
             statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500');
             profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch');
             profileStatusEl.classList.add('terminal-text');
+            photoEl.classList.remove('grayscale-photo');
+            photoEl.classList.remove('hidden');
+            wantedPlaceholderEl.classList.add('hidden');
+            
             gafetContentEl.style.borderColor = 'var(--color-activo)';
             gafetContentEl.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.6)';
             
-            // Lógica de visualización
+            // Lógica de visualización y texto de estado
             if (status === 'PAUSA') {
                 gafetContentEl.classList.add('status-pausa');
-                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : "ESTE PERFIL ESTÁ PAUSA";
+                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : status; 
                 
                 // Estilo visual de alerta
                 statusBoxEl.classList.add('bg-yellow-900/40', 'border-yellow-500');
                 profileStatusEl.classList.add('text-yellow-400');
-            } else if (status === 'ELIMINADO') { // CAMBIO: DADO DE BAJA -> ELIMINADO
+                
+                // Efecto visual requerido
+                photoEl.classList.add('grayscale-photo');
+            } else if (status === 'ELIMINADO') { 
                 gafetContentEl.classList.add('status-baja');
-                profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : "ESTE PERFIL ESTÁ ELIMINADO";
+                profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : status;
                 
                 // Estilo visual de baja (gris)
                 statusBoxEl.classList.add('bg-gray-900/40', 'border-gray-500');
                 profileStatusEl.classList.remove('terminal-text');
                 profileStatusEl.classList.add('text-gray-400');
+
+                // Efecto visual requerido: SE BUSCA
+                photoEl.classList.add('hidden');
+                wantedPlaceholderEl.classList.remove('hidden');
+
             } else { // ACTIVO
-                profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : "ESTE PERFIL ESTÁ ACTIVO";
+                profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : status;
                 
                 // Estilo visual activo (verde)
                 statusBoxEl.classList.add('bg-green-900/40', 'border-green-500');
@@ -296,7 +369,7 @@
             
             // Carga la foto
             const photoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
-            document.getElementById('profile-photo').src = photoUrl;
+            photoEl.src = photoUrl;
             
             // Normaliza el estado (ACTIVO, PAUSA, ELIMINADO)
             const status = (user.estado || 'ELIMINADO').toUpperCase();
@@ -304,38 +377,42 @@
             // Aplica estilos en modo operativo (default)
             applyStatusStyles(status, false);
             
-            // Elementos visibles en modo operativo
-            qrcodeContainerEl.classList.remove('hidden');
-            validationMsgEl.textContent = 'Validación Digital: REQUERIDA';
-            riskMsgEl.classList.remove('hidden');
+            // Controla la visibilidad de los bloques basados en el estado
+            if (status === 'ACTIVO') {
+                qrValidationBlockEl.classList.remove('hidden');
+                socialIconsInCardEl.classList.remove('hidden'); // Muestra los iconos
+            } else {
+                // Oculta QR, ID, validación y los iconos si está PAUSA o ELIMINADO
+                qrValidationBlockEl.classList.add('hidden');
+                socialIconsInCardEl.classList.add('hidden'); 
+            }
 
-            // Genera el QR dinámicamente
-            // Crea una URL limpia (sin &mode=admin) para el QR, de modo que el QR no revele el modo de descarga
+            // Genera el QR dinámicamente (solo si es ACTIVO o MODO ADMIN)
             const cleanUrl = window.location.href.split('?')[0] + '?id=' + user.id_colaborador;
             generateQrCode(cleanUrl);
 
-            // Controla la visibilidad de botones de descarga y redes sociales
-            configureActionButtons(status, params.mode);
+            // Controla la visibilidad de botones de descarga (solo ADMIN)
+            configureActionButtons(params.mode);
             
             profileContentEl.classList.remove('hidden');
-            actionButtonsEl.classList.remove('hidden');
         }
         
         // Controla la visibilidad de botones de descarga y redes sociales
-        function configureActionButtons(status, mode) {
-            // Mostrar botón de descarga SOLO si el modo es 'admin'
-            if (mode === 'admin') {
-                downloadButton.classList.remove('hidden');
-            } else {
-                downloadButton.classList.add('hidden');
+        function configureActionButtons(mode) {
+            const isAdmin = mode === 'admin';
+
+            // Oculta completamente el bloque de acciones si no es admin
+            if (!isAdmin) {
+                actionButtonsEl.classList.add('hidden');
+                return;
             }
 
-            // Ocultar botones de redes sociales si el estado es PAUSA o ELIMINADO
-            if (status === 'PAUSA' || status === 'ELIMINADO') {
-                socialButtonsContainer.classList.add('hidden');
-            } else {
-                socialButtonsContainer.classList.remove('hidden');
-            }
+            actionButtonsEl.classList.remove('hidden');
+            
+            // Mostrar botón de descarga SOLO si es admin
+            downloadButton.classList.remove('hidden');
+            
+            // Los iconos de redes sociales dentro de la tarjeta son manejados por displayProfile
         }
 
 
@@ -347,6 +424,7 @@
         // Función para generar el QR (usa la librería qrcode.min.js)
         function generateQrCode(url) {
             qrcodeContainerEl.innerHTML = '';
+            // Solo genera el QR si el contenedor no está oculto por CSS
             new QRCode(qrcodeContainerEl, {
                 text: url,
                 width: 80,
@@ -363,17 +441,24 @@
             const filename = `GAFETE_PROTOCOLARIO_${profileIdEl.textContent}.pdf`;
             
             // 1. Obtiene el estado actual (siempre ACTIVO/PAUSA/ELIMINADO)
-            const currentStatusText = profileStatusEl.textContent;
-            const originalStatus = currentStatusText.includes('ACTIVO') ? 'ACTIVO' : currentStatusText.includes('PAUSA') ? 'PAUSA' : 'ELIMINADO';
+            const originalStatus = profileStatusEl.textContent; 
 
             // 2. Aplica estilos de modo protocolo para la impresión:
             gafetContentEl.classList.add('pdf-mode'); 
-            qrcodeContainerEl.classList.add('hidden'); 
+            
+            // En modo PDF, el bloque de validación/QR SÍ debe ser visible para la impresión de validación bi
+            qrValidationBlockEl.classList.remove('hidden'); 
+            idAndValidationBlockEl.classList.remove('hidden');
+            qrcodeContainerEl.classList.add('hidden'); // Oculta QR en PDF
+            socialIconsInCardEl.classList.add('hidden'); // Oculta iconos en PDF
             riskMsgEl.classList.add('hidden'); 
-            validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Mensaje de validación
+            validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Mensaje de validación para el PDF
             actionButtonsEl.classList.add('hidden'); // Ocultar todos los botones de acción
+            photoEl.classList.remove('grayscale-photo'); // Quita B&W en el PDF
+            wantedPlaceholderEl.classList.add('hidden'); // Oculta SE BUSCA en el PDF
+            photoEl.classList.remove('hidden'); // Asegura que la foto original esté visible
 
-            // Aplica estilos de estado para el modo Protocolario (sin glitch, sin pulso)
+            // Aplica estilos de estado para el modo Protocolario (texto completo, sin efectos)
             applyStatusStyles(originalStatus, true);
 
             // 3. Genera el PDF
@@ -386,14 +471,22 @@
             }).then(() => {
                 // 4. Revierte al modo Operativo original (después de la descarga)
                 gafetContentEl.classList.remove('pdf-mode');
-                qrcodeContainerEl.classList.remove('hidden');
                 riskMsgEl.classList.remove('hidden');
                 validationMsgEl.textContent = 'Validación Digital: REQUERIDA';
-                actionButtonsEl.classList.remove('hidden');
                 
-                // Revierte los estilos de estado y visibilidad de botones al modo operativo
+                // Revierte los estilos de estado al modo operativo
                 applyStatusStyles(originalStatus, false);
-                configureActionButtons(originalStatus, getUrlParams().mode);
+                configureActionButtons(getUrlParams().mode);
+                
+                // Restaura la visibilidad de bloques
+                if (originalStatus === 'ACTIVO' || getUrlParams().mode === 'admin') {
+                    qrValidationBlockEl.classList.remove('hidden');
+                    qrcodeContainerEl.classList.remove('hidden');
+                    socialIconsInCardEl.classList.remove('hidden'); // Vuelve a mostrar iconos si estaba ACTIVO
+                } else {
+                    qrValidationBlockEl.classList.add('hidden');
+                    socialIconsInCardEl.classList.add('hidden');
+                }
             });
         });
 

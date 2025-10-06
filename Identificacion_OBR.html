@@ -10,7 +10,7 @@
     <!-- Font Awesome para los iconos de redes sociales -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDkGkXJEDoXekD6+l9sN+z5kQ7s/Q7Z6q08e+k7E+h7D/0f/E0A2A5Z7tY3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght+400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
         
         /* Colores Base */
         :root {
@@ -60,6 +60,13 @@
         }
         
         /* ================================================= */
+        /* === CLASE PARA AUMENTAR EL BRILLO DEL TEXTO DE ADVERTENCIA === */
+        .warning-glow-red {
+            text-shadow: 0 0 8px #f87171, 0 0 15px #dc2626; /* Glow rojo más intenso */
+        }
+        /* ================================================= */
+
+        /* ================================================= */
         /* === ANIMACIÓN DE CARGA SECUENCIAL (DE ARRIBA A ABAJO) === */
         /* ================================================= */
 
@@ -68,11 +75,21 @@
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Keyframes para la animación de salida (para simular que desaparece) */
+        @keyframes fade-out {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
 
         /* Clase base para aplicar la animación de entrada */
         .loading-line, .fade-in-sequential {
             opacity: 0; /* Oculto por defecto */
             animation: fade-in-up 0.4s ease-out forwards;
+        }
+        
+        .loading-line.fade-out {
+            animation: fade-out 0.3s ease-in forwards;
         }
         
         /* Controlar la animación en cascada para el contenido del perfil */
@@ -109,8 +126,8 @@
         }
         @keyframes glitch-anim {
             0% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
-            33% { transform: translate(-2px, 2px); text-shadow: 2px -2px 0 #ef4444; }
-            66% { transform: translate(2px, -2px); text-shadow: -2px 2px 0 #3b82f6; }
+            33% { transform: translate(2px, -2px); text-shadow: -2px 2px 0 #ef4444; }
+            66% { transform: translate(-2px, 2px); text-shadow: 2px -2px 0 #3b82f6; }
             100% { transform: translate(0); text-shadow: 0 0 5px var(--color-activo); }
         }
         
@@ -134,6 +151,9 @@
         }
         .pdf-mode #divider {
             box-shadow: none !important; /* Limpiar sombra del divisor */
+        }
+        .pdf-mode .warning-glow-red {
+            text-shadow: none !important; /* Limpiar brillo en PDF */
         }
 
         /* Placeholder 'SE BUSCA' */
@@ -217,20 +237,25 @@
         <div class="h-0.5 w-full bg-green-500 opacity-70 my-2 shadow-md shadow-[#10b981]/50" id="divider"></div> 
 
         <!-- Loader inicial y dinámico - CONTENEDOR DE MENSAJES DE CARGA -->
+        <!-- ESTE CONTENEDOR SOLO TENDRÁ UNA LÍNEA VISIBLE A LA VEZ -->
         <div id="loading" class="terminal-text text-xl pt-10 flex flex-col items-center space-y-2 hidden"> 
-            <!-- Los mensajes de carga aparecerán aquí dinámicamente -->
-            <div id="loading-text-container"></div>
+            <!-- El mensaje de carga actual aparecerá aquí dinámicamente -->
+            <div id="loading-text-container" class="w-full text-center min-h-[1.5rem]">
+                <!-- Contenido de mensaje destructivo se inserta aquí -->
+            </div>
+            
+            <!-- Título de error, aparece después de la falla, sin margen superior ya que sigue la última línea de carga -->
+            <p id="error-ghost-title" class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch hidden mt-4">👻 ERROR [404] 👻</p>
         </div>
 
-        <!-- Contenido del Perfil (Aplicamos el estilo de aparición general aquí) -->
+        <!-- Contenido del Perfil -->
         <div id="profile-content" class="hidden w-full flex-grow flex flex-col justify-between">
             
             <!-- SECCIÓN SUPERIOR: Foto y Datos (DELAY-1) -->
-            <!-- MARGIN NEGATIVO PARA COMPACTAR MÁS -->
-            <div class="w-full flex flex-col items-center -mt-4 fade-in-sequential" data-delay="1"> 
+            <div class="w-full flex flex-col items-center mt-6 fade-in-sequential" data-delay="1"> 
                 
-                <!-- Marco de la Foto: RESTAURADO A W-40 H-48 -->
-                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-0.5 overflow-hidden relative"> <!-- MARGIN REDUCIDO A mb-0.5 -->
+                <!-- Marco de la Foto: TAMAÑO ORIGINAL -->
+                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-1 overflow-hidden relative">
                     <img id="profile-photo" 
                          src="" 
                          alt="Foto de Perfil" 
@@ -245,22 +270,22 @@
             </div>
 
             <!-- Estado de Activación (DELAY-2) -->
-            <div id="status-box" class="py-1 px-2 mb-1 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2"> <!-- PADDING VERTICAL REDUCIDO A py-1 y MARGIN DE mb-2 a mb-1 -->
+            <div id="status-box" class="py-1 px-2 mb-1 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
                 <p class="text-xs uppercase mono-text">Estado del Perfil</p>
                 <p id="profile-status" class="text-xl font-extrabold terminal-text mt-0.5 transition duration-500"></p> 
             </div>
             
             <!-- Datos del Colaborador (Nombre y Rol) (DELAY-3) -->
-            <div class="mb-1 w-full fade-in-sequential" data-delay="3"> <!-- MARGIN REDUCIDO DE mb-1 -->
-                <p class="text-xs uppercase mono-text text-green-300 opacity-80 my-0.5">Nombre de Operativo</p> <!-- MARGIN REDUCIDO A my-0.5 -->
+            <div class="mb-1 w-full fade-in-sequential" data-delay="3">
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 my-0.5">Nombre de Operativo</p>
                 <p id="profile-name" class="text-2xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-0.5"></p> 
                 
-                <p class="text-xs uppercase mono-text text-green-300 opacity-80 my-0.5">Rol de Activo</p> <!-- MARGIN REDUCIDO A my-0.5 -->
-                <p id="profile-role" class="text-xl font-bold terminal-text leading-tight"></p> 
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 my-0.5">Rol de Activo</p>
+                <p id="profile-role" class="text-xl font-bold terminal-text leading-tight mb-0.5"></p>
             </div>
             
             <!-- BLOQUE: ICONOS DE REDES SOCIALES (DELAY-4) -->
-            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-2 mb-1 fade-in-sequential" data-delay="4"> 
+            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-1 mb-1 fade-in-sequential" data-delay="4">
                 <!-- TikTok -->
                 <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2">
                     <i class="fab fa-tiktok text-xl social-icon"></i> 
@@ -277,18 +302,19 @@
             <!-- FIN BLOQUE ICONOS -->
             
             <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD -->
-            <div id="security-warning" class="w-full mt-1 mb-1 py-1 px-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5"> <!-- PADDING VERTICAL REDUCIDO A py-1 -->
-                <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
+            <div id="security-warning" class="w-full mt-1 mb-1 py-1 px-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
+                <!-- AUMENTO DE BRILLO -->
+                <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase warning-glow-red">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
             </div>
 
 
             <!-- SECCIÓN INFERIOR: QR y Registro (DELAY-6) -->
-            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-2 fade-in-sequential" data-delay="6">
+            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-1 fade-in-sequential" data-delay="6">
                 
                 <!-- QR de Validación Dinámico (Izquierda) - Solo visible en modo ADMIN o PDF -->
-                <div id="qrcode-container" class="w-[90px] h-[90px] rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden"> <!-- RESTAURADO A W-[90PX] H-[90PX] -->
+                <div id="qrcode-container" class="w-[90px] h-[90px] rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden">
                     <!-- El QR se genera aquí -->
                 </div>
                 
@@ -306,21 +332,17 @@
 
         </div>
 
-        <!-- Contenido de Error (Aplicamos el estilo de aparición general aquí) -->
-        <div id="error-content" class="hidden w-full pt-10 flex flex-col items-center"> 
-            <!-- Título de Error (DELAY-1) -->
-            <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch fade-in-sequential" data-delay="1">ERROR [404]</p>
+        <!-- Contenido de Error (SE MUESTRA DEBAJO DEL TÍTULO DEL FANTASMA) -->
+        <div id="error-content" class="hidden w-full pt-1 flex flex-col items-center"> 
             
-            <!-- Descripción del Error (DELAY-2) -->
-            <p class="text-lg mono-text text-gray-400 mt-3 mb-6 fade-in-sequential" data-delay="2">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p> 
+            <!-- Descripción del Error (mt-8 para bajar el texto) -->
+            <p class="text-xl mono-text text-gray-400 mt-8 mb-2 fade-in-sequential" data-delay="1">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p> 
             
-            <!-- Recuadro Rojo de Seguridad (Solo en Error) (DELAY-3) -->
-            <div id="error-security-warning" class="w-full py-1 px-2 border border-red-600 bg-red-900/20 rounded fade-in-sequential" data-delay="3"> <!-- PADDING VERTICAL REDUCIDO A py-1 -->
-                <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
-                    ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
-                </p>
-            </div>
-            <!-- FIN RECUADRO ROJO -->
+            <!-- Mensaje de advertencia de seguridad -->
+             <!-- AUMENTO DE BRILLO Y NEGRITA -->
+             <p class="text-sm font-black mono-text text-red-500 animate-pulse mt-2 tracking-widest transition duration-500 text-center uppercase fade-in-sequential warning-glow-red" data-delay="2">
+                ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR.⚠️
+            </p>
         </div>
     </div>
 
@@ -349,6 +371,7 @@
         const loadingTextContainerEl = document.getElementById('loading-text-container'); 
         const profileContentEl = document.getElementById('profile-content');
         const errorContentEl = document.getElementById('error-content');
+        const errorGhostTitleEl = document.getElementById('error-ghost-title'); 
         const actionButtonsEl = document.getElementById('action-buttons');
         const gafetContentEl = document.getElementById('gafet-content');
         const statusBoxEl = document.getElementById('status-box');
@@ -382,7 +405,7 @@
         }
 
         /**
-         * Simula la secuencia de carga, inicia la búsqueda y maneja la visualización final.
+         * Simula la secuencia de carga, reemplazando el texto.
          */
         function startLoadingSequence(id) {
             
@@ -393,7 +416,6 @@
             ];
             const messageDelay = 800; 
             const MIN_LOADING_TIME = loadingMessages.length * messageDelay;
-
             
             let step = 0;
             let fetchCompleted = false;
@@ -402,29 +424,43 @@
             
             loadingEl.classList.remove('hidden'); 
             
-            // 1. Función para mostrar la siguiente línea de carga (aparece una debajo de la otra)
+            // 1. Función para mostrar la siguiente línea de carga (destructiva: elimina la anterior)
             function showNextLoadingLine() {
-                if (step < loadingMessages.length) {
-                    const msg = loadingMessages[step];
-                    
-                    const newP = document.createElement('p');
-                    newP.textContent = msg;
-                    newP.classList.add('loading-line'); 
-                    newP.style.animationDelay = `${step * 0.1}s`; 
-                    
-                    if (step === loadingMessages.length - 1) {
-                         newP.classList.add('animate-pulse');
-                    } else {
-                        newP.classList.remove('animate-pulse');
-                    }
-                    
-                    loadingTextContainerEl.appendChild(newP);
-                    step++;
-                    
-                    if (step < loadingMessages.length) {
-                        setTimeout(showNextLoadingLine, messageDelay);
-                    }
+                
+                // FIX: Usamos querySelector('.loading-line') para asegurarnos de que solo seleccionamos el elemento <p> que creamos.
+                const previousMessage = loadingTextContainerEl.querySelector('.loading-line'); 
+                
+                if (previousMessage) {
+                    previousMessage.classList.add('fade-out');
+                    // Esperar a que termine la animación de salida para removerlo completamente
+                    setTimeout(() => {
+                        loadingTextContainerEl.innerHTML = ''; // Eliminar completamente el elemento anterior
+                    }, 300); // 300ms es la duración de la animación fade-out
                 }
+
+                // Esperar un breve momento para la transición antes de mostrar la siguiente línea
+                setTimeout(() => {
+                    if (step < loadingMessages.length) {
+                        const msg = loadingMessages[step];
+                        
+                        // Creación de nueva línea con animación de entrada (fade-in)
+                        const newP = document.createElement('p');
+                        newP.textContent = msg;
+                        newP.classList.add('loading-line'); 
+                        
+                        // Solo el último mensaje tiene el pulso
+                        if (step === loadingMessages.length - 1) {
+                            newP.classList.add('animate-pulse');
+                        }
+                        
+                        loadingTextContainerEl.appendChild(newP);
+                        step++;
+                        
+                        if (step < loadingMessages.length) {
+                            setTimeout(showNextLoadingLine, messageDelay);
+                        }
+                    }
+                }, previousMessage ? 300 : 0); // Espera si hay un mensaje anterior
             }
             
             showNextLoadingLine();
@@ -440,29 +476,35 @@
                 })
                 .finally(() => {
                     fetchCompleted = true;
-                    processResult();
+                    // Procesa el resultado si el temporizador ya expiró, sino, el timer lo hará.
+                    if (loadingTimerExpired) {
+                        processResult();
+                    }
                 });
 
             // 3. Establecer el temporizador mínimo de carga 
             setTimeout(() => {
                 loadingTimerExpired = true;
-                processResult();
+                // Si el temporizador expira y la carga ya terminó, procesa el resultado.
+                if (fetchCompleted) {
+                    processResult();
+                }
             }, MIN_LOADING_TIME + 500); 
 
             // 4. Función para verificar y mostrar el resultado
             function processResult() {
                 if (fetchCompleted && loadingTimerExpired) {
                     
-                    // Ocultar el loader con un pequeño delay
-                    setTimeout(() => {
+                    // Si hubo éxito, ocultamos el loader y mostramos el perfil.
+                    if (fetchResult && fetchResult.user) {
+                        // Aseguramos que la última línea desaparezca si fue exitoso
                         loadingEl.classList.add('hidden'); 
-                        
-                        if (fetchResult && fetchResult.user) {
-                            displayProfile(fetchResult.user);
-                        } else {
-                            showError();
-                        }
-                    }, 500); 
+                        loadingTextContainerEl.innerHTML = ''; 
+                        displayProfile(fetchResult.user);
+                    } else {
+                        // Error case: Mantener la última línea visible y mostrar el error.
+                        showError();
+                    }
                 }
             }
         }
@@ -606,6 +648,7 @@
             configureActionButtons(params.mode);
             
             profileContentEl.classList.remove('hidden');
+            errorContentEl.classList.add('hidden'); // Asegurarse de que el error esté oculto
         }
         
         // Controla la visibilidad de botones de descarga y redes sociales
@@ -624,16 +667,26 @@
 
         // Función para mostrar el error
         function showError() {
-            // Configurar el estado como ELIMINADO para mostrar el placeholder y la advertencia
-            applyStatusStyles('ELIMINADO', false); 
+            
+            // 1. Ocultar la última línea de carga (FIX: Limpia el contenedor de texto de carga)
+            loadingTextContainerEl.innerHTML = ''; 
 
-            // Ocultar el contenido del perfil 
+            // 2. Ocultar el contenido del perfil 
             profileContentEl.classList.add('hidden');
+            
+            // 3. Mostrar el título del error (el fantasma)
+            errorGhostTitleEl.classList.remove('hidden');
 
-            // Mostrar el contenido de error
+            // 4. Mostrar el resto del contenido de error (el "PERFIL DE COLABORADOR NO ENCONTRADO...")
             errorContentEl.classList.remove('hidden');
+            
+            // 5. Asegurar que el contenedor de carga siga visible (contiene el fantasma)
+            loadingEl.classList.remove('hidden');
 
-            // Asegurar que la advertencia de seguridad es visible 
+            // 6. Aplicar estilos de ELIMINADO (wanted poster)
+            applyStatusStyles('ELIMINADO', false); 
+            
+            // Asegurar que la advertencia de seguridad fuera del error-content esté oculta
             securityWarningEl.classList.add('hidden'); 
         }
         

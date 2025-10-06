@@ -135,10 +135,8 @@
 
         /* Placeholder 'SE BUSCA' */
         .wanted-placeholder {
-            /* AJUSTE CLAVE: Aseguramos que la imagen ocupe todo el marco de 160x192 */
             width: 100%; 
             height: 100%;
-            /* Otros estilos */
             background-image: linear-gradient(135deg, #cc3333 0%, #aa2222 100%);
             transform: rotate(-3deg);
             border: 3px dashed #fff;
@@ -228,7 +226,7 @@
             <div class="w-full flex flex-col items-center fade-in-sequential" data-delay="1">
                 
                 <!-- Marco de la Foto (Dimensiones: w-40 h-48) -->
-                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden relative">
+                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-4 overflow-hidden relative">
                     <img id="profile-photo" 
                          src="" 
                          alt="Foto de Perfil" 
@@ -243,22 +241,27 @@
             </div>
 
             <!-- Estado de Activación (DELAY-2) -->
-            <div id="status-box" class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
+            <!-- Reducción de mb-6 a mb-4 -->
+            <div id="status-box" class="p-3 mb-4 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
                 <p class="text-xs uppercase mono-text">Estado del Perfil</p>
                 <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 transition duration-500"></p>
             </div>
             
             <!-- Datos del Colaborador (Nombre y Rol) (DELAY-3) -->
-            <div class="mb-4 w-full fade-in-sequential" data-delay="3">
-                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-4">Nombre de Operativo</p>
+            <!-- Reducción de espaciado general -->
+            <div class="mb-2 w-full fade-in-sequential" data-delay="3">
+                <!-- Reducción de mt-4 a mt-2 -->
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-2">Nombre de Operativo</p>
                 <p id="profile-name" class="text-3xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-1"></p>
                 
-                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-6">Rol de Activo</p>
+                <!-- Reducción de mt-6 a mt-3 -->
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-3">Rol de Activo</p>
                 <p id="profile-role" class="text-2xl font-bold terminal-text leading-tight"></p>
             </div>
             
             <!-- BLOQUE: ICONOS DE REDES SOCIALES (DELAY-4) -->
-            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-6 mb-4 fade-in-sequential" data-delay="4">
+            <!-- Reducción de mt-6 mb-4 a mt-4 mb-2 -->
+            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-4 mb-2 fade-in-sequential" data-delay="4">
                 <!-- TikTok -->
                 <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2">
                     <i class="fab fa-tiktok text-2xl social-icon"></i>
@@ -275,7 +278,8 @@
             <!-- FIN BLOQUE ICONOS -->
             
             <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD (Oculto en ACTIVO/PAUSA, visible en ELIMINADO/Error) -->
-            <div id="security-warning" class="w-full mt-4 mb-4 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
+            <!-- Reducción de mt-4 mb-4 a mt-2 mb-2 -->
+            <div id="security-warning" class="w-full mt-2 mb-2 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
@@ -283,7 +287,8 @@
 
 
             <!-- SECCIÓN INFERIOR: QR y Registro (DELAY-6) -->
-            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-4 fade-in-sequential" data-delay="6">
+            <!-- Reducción de mt-4 a mt-2 -->
+            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-2 fade-in-sequential" data-delay="6">
                 
                 <!-- QR de Validación Dinámico (Izquierda) - Solo visible en modo ADMIN o PDF -->
                 <div id="qrcode-container" class="w-24 h-24 rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden">
@@ -597,13 +602,21 @@
             // Controla la visibilidad de bloques y advertencias
             if (status === 'ACTIVO' || status === 'PAUSA') {
                 qrValidationBlockEl.classList.remove('hidden');
-                socialIconsInCardEl.classList.remove('hidden'); 
                 securityWarningEl.classList.add('hidden'); // Ocultar
             } else { // ELIMINADO/NO ENCONTRADO
                 qrValidationBlockEl.classList.add('hidden');
-                socialIconsInCardEl.classList.add('hidden'); 
                 securityWarningEl.classList.remove('hidden'); // Mostrar
             }
+            
+            // === LÓGICA DE VISIBILIDAD DE LOGOS DE REDES SOCIALES ===
+            if (isAdmin) {
+                // Ocultar logos en modo admin
+                socialIconsInCardEl.classList.add('hidden'); 
+            } else {
+                // Mostrar logos en modo operativo (no admin)
+                socialIconsInCardEl.classList.remove('hidden'); 
+            }
+            // ========================================================
 
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
             if (isAdmin && user.id_colaborador) {
@@ -713,12 +726,16 @@
                 // Re-establecer visibilidad de bloques según el modo y estado
                 if (currentStatus === 'ACTIVO' || currentStatus === 'PAUSA') {
                     qrValidationBlockEl.classList.remove('hidden');
-                    socialIconsInCardEl.classList.remove('hidden');
-                    securityWarningEl.classList.add('hidden');
                 } else { // ELIMINADO/BAJA
                     qrValidationBlockEl.classList.add('hidden');
-                    socialIconsInCardEl.classList.add('hidden');
                     securityWarningEl.classList.remove('hidden'); // Mostrar advertencia
+                }
+                
+                // Re-establecer visibilidad de logos (si no es admin)
+                if (params.mode !== 'admin') {
+                    socialIconsInCardEl.classList.remove('hidden');
+                } else {
+                    socialIconsInCardEl.classList.add('hidden');
                 }
 
                 // Re-establecer visibilidad del QR si es modo admin

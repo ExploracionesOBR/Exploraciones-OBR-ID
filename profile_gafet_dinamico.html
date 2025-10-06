@@ -124,9 +124,6 @@
             box-shadow: none !important;
             border: 4px solid var(--color-activo) !important;
         }
-        .pdf-mode .bg-green-900\/40 {
-            background-color: transparent !important;
-        }
         .pdf-mode .card-texture-bg {
              background: #000 !important; /* Fondo negro sólido para impresión */
         }
@@ -278,8 +275,11 @@
     <script>
         // =========================================================================================================
         // 🚨 PASO CRÍTICO: REEMPLAZA ESTA LÍNEA 🚨
-        const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
+        const API_ENDPOINT = 'TU_ENDPOINT_AQUI'; 
         // =========================================================================================================
+
+        // URL base de la aplicación para el QR (usando el formato de GitHub Pages que especificaste)
+        const BASE_URL = 'https://exploracionesobr.github.io/Exploraciones-OBR-ID/profile_gafet_dinamico.html';
 
         // Elementos del DOM
         const loadingEl = document.getElementById('loading');
@@ -456,8 +456,8 @@
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
             // El QR solo debe ser visible si estamos en modo ADMIN.
             if (isAdmin) {
-                // Generar QR con la URL limpia para la vista pública
-                const cleanUrl = window.location.href.split('?')[0] + '?id=' + user.id_colaborador;
+                // Usa la URL base y agrega el ID para la vista pública (sin modo=admin)
+                const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
                 generateQrCode(cleanUrl);
                 
                 // Solo muestra el contenedor si es modo admin Y el perfil existe
@@ -594,3 +594,4 @@
     </script>
 </body>
 </html>
+

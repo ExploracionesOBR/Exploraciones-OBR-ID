@@ -10,7 +10,7 @@
     <!-- Font Awesome para los iconos de redes sociales -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDkGkXJEDoXekD6+l9sN+z5kQ7s/Q7Z6q08e+k7E+h7D/0f/E0A2A5Z7tY3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght+400;700&display=swap');
         
         /* Colores Base */
         :root {
@@ -34,16 +34,15 @@
             background-size: 4px 4px, 100% 25px;
         }
 
+        /* AJUSTE CLAVE: Usamos min-h-screen y max-w-xs para que el marco sea más largo y se adapte */
         .card-container {
-            /* Mantiene altura mínima para contener todo el contenido */
-            min-height: 80vh; 
-            max-height: 850px; 
+            min-height: 100vh; /* Se extiende al máximo de la pantalla */
             background-color: var(--color-fondo);
             border: 4px solid var(--color-activo);
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
             padding: 2rem;
             width: 100%;
-            max-width: 25rem; 
+            max-width: 25rem; /* Max-width para un buen tamaño de gafete */
             transition: all 0.5s ease;
         }
         
@@ -61,7 +60,7 @@
         }
         
         /* ================================================= */
-        /* === ANIMACIÓN DE CARGA SECUENCIAL Y GLITCH === */
+        /* === ANIMACIÓN DE CARGA SECUENCIAL (DE ARRIBA A ABAJO) === */
         /* ================================================= */
 
         /* Keyframes para la animación de entrada (cada línea aparecerá desde abajo) */
@@ -71,18 +70,22 @@
         }
 
         /* Clase base para aplicar la animación de entrada */
-        .loading-line {
+        .loading-line, .fade-in-sequential {
             opacity: 0; /* Oculto por defecto */
             animation: fade-in-up 0.4s ease-out forwards;
         }
-
-        /* Retrasos específicos */
-        .delay-1 { animation-delay: 0.1s; } 
-        .delay-2 { animation-delay: 0.3s; } 
-        .delay-3 { animation-delay: 0.5s; } 
-        .delay-4 { animation-delay: 0.7s; } 
-        .delay-5 { animation-delay: 0.9s; } 
         
+        /* Controlar la animación en cascada para el contenido del perfil */
+        /* Si solo usamos una clase, Tailwind puede aplicar los retrasos. 
+           Usamos CSS para definir los retrasos por `data-delay` */
+        .fade-in-sequential[data-delay="1"] { animation-delay: 0.1s; } 
+        .fade-in-sequential[data-delay="2"] { animation-delay: 0.3s; } 
+        .fade-in-sequential[data-delay="3"] { animation-delay: 0.5s; } 
+        .fade-in-sequential[data-delay="4"] { animation-delay: 0.7s; } 
+        .fade-in-sequential[data-delay="5"] { animation-delay: 0.9s; } 
+        .fade-in-sequential[data-delay="6"] { animation-delay: 1.1s; } 
+        .fade-in-sequential[data-delay="7"] { animation-delay: 1.3s; } 
+
         /* ================================================= */
         /* === CLASES ESPECÍFICAS DE ESTADO === */
         /* ================================================= */
@@ -132,6 +135,10 @@
 
         /* Placeholder 'SE BUSCA' */
         .wanted-placeholder {
+            /* AJUSTE CLAVE: Aseguramos que la imagen ocupe todo el marco de 160x192 */
+            width: 100%; 
+            height: 100%;
+            /* Otros estilos */
             background-image: linear-gradient(135deg, #cc3333 0%, #aa2222 100%);
             transform: rotate(-3deg);
             border: 3px dashed #fff;
@@ -169,25 +176,24 @@
 
         /* Línea 1: EXPLORACIONES (Aparición Rápida) */
         .line-1-instant {
-            opacity: 0; /* Empieza oculto */
+            opacity: 0; 
             animation: 
                 instant-fade-in 0.5s ease-out forwards;
-            animation-delay: 0.5s; /* Aparece después de 0.5s */
+            animation-delay: 0.5s; 
         }
 
         /* Línea 2: OBR (Escritura Rápida) */
         .typing-line-2 {
-            /* Retraso: 0.5s (pausa) + 0.5s (animación EXPLORACIONES) + 0.5s (pausa antes de OBR) = 1.5s total */
             animation: 
                 typing-2 0.6s steps(3, end) forwards;
             animation-delay: 1.5s; 
-            opacity: 0; /* Oculto hasta que empieza la animación */
+            opacity: 0; 
         }
 
         /* Keyframes para la línea 1 (Aparición) */
         @keyframes instant-fade-in {
             from { opacity: 0; }
-            to { opacity: 1; width: 100%; } /* Fijo el ancho al 100% para que no use el efecto typing */
+            to { opacity: 1; width: 100%; } 
         }
         /* Keyframes para la línea 2 (Escritura) */
         @keyframes typing-2 {
@@ -197,15 +203,14 @@
 
     </style>
 </head>
-<body class="flex justify-center items-center p-4">
+<!-- Centramos en la pantalla y usamos min-h-screen para el contenedor principal -->
+<body class="flex justify-center items-start p-4 min-h-screen">
 
     <!-- Contenedor principal de la tarjeta (para PDF y visualización) -->
     <div id="gafet-content" class="card-container flex flex-col items-center text-center card-texture-bg">
-        <!-- Título principal con el efecto de Máquina de Escribir (AHORA A DOS LÍNEAS CENTRADAS) -->
+        <!-- Título principal con el efecto de Máquina de Escribir -->
         <h1 class="text-4xl font-black terminal-text leading-tight mb-2 text-center flex flex-col items-center">
-            <!-- Línea 1: Aparición Rápida -->
             <span class="line-1-instant">EXPLORACIONES</span>
-            <!-- Línea 2: Escritura Rápida -->
             <span class="typing-line typing-line-2 mt-1">OBR</span>
         </h1>
         <div class="h-0.5 w-full bg-green-500 opacity-70 my-3 shadow-md shadow-[#10b981]/50" id="divider"></div>
@@ -216,34 +221,35 @@
             <div id="loading-text-container"></div>
         </div>
 
-        <!-- Contenido del Perfil -->
+        <!-- Contenido del Perfil (Aplicamos el estilo de aparición general aquí) -->
         <div id="profile-content" class="hidden w-full flex-grow flex flex-col justify-between">
             
             <!-- SECCIÓN SUPERIOR: Foto y Datos (DELAY-1) -->
-            <div class="w-full flex flex-col items-center fade-in-sequential delay-1">
+            <div class="w-full flex flex-col items-center fade-in-sequential" data-delay="1">
                 
-                <!-- Marco de la Foto (Contenedor para aplicar filtros o reemplazo) -->
-                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden">
+                <!-- Marco de la Foto (Dimensiones: w-40 h-48) -->
+                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden relative">
                     <img id="profile-photo" 
                          src="" 
                          alt="Foto de Perfil" 
                          class="w-full h-full object-cover transition duration-00" 
                          onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
                     
-                    <div id="wanted-placeholder" class="w-full h-full wanted-placeholder absolute flex items-center justify-center hidden">
+                    <!-- El placeholder ahora tiene width: 100% y height: 100% -->
+                    <div id="wanted-placeholder" class="wanted-placeholder absolute flex items-center justify-center hidden">
                         <span class="text-3xl font-black terminal-text text-white transform rotate-12">SE BUSCA</span>
                     </div>
                 </div>
             </div>
 
             <!-- Estado de Activación (DELAY-2) -->
-            <div id="status-box" class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential delay-2">
+            <div id="status-box" class="p-3 mb-6 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
                 <p class="text-xs uppercase mono-text">Estado del Perfil</p>
                 <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 transition duration-500"></p>
             </div>
             
             <!-- Datos del Colaborador (Nombre y Rol) (DELAY-3) -->
-            <div class="mb-4 w-full fade-in-sequential delay-3">
+            <div class="mb-4 w-full fade-in-sequential" data-delay="3">
                 <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-4">Nombre de Operativo</p>
                 <p id="profile-name" class="text-3xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-1"></p>
                 
@@ -252,7 +258,7 @@
             </div>
             
             <!-- BLOQUE: ICONOS DE REDES SOCIALES (DELAY-4) -->
-            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-6 mb-4 fade-in-sequential delay-4">
+            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-6 mb-4 fade-in-sequential" data-delay="4">
                 <!-- TikTok -->
                 <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2">
                     <i class="fab fa-tiktok text-2xl social-icon"></i>
@@ -268,29 +274,29 @@
             </div>
             <!-- FIN BLOQUE ICONOS -->
             
-            <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD (Mantenemos el bloque oculto) -->
-            <div id="security-warning" class="w-full mt-4 mb-4 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden">
+            <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD (Oculto en ACTIVO/PAUSA, visible en ELIMINADO/Error) -->
+            <div id="security-warning" class="w-full mt-4 mb-4 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
             </div>
 
 
-            <!-- SECCIÓN INFERIOR: QR y Registro (DELAY-5) -->
-            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-4 fade-in-sequential delay-5">
+            <!-- SECCIÓN INFERIOR: QR y Registro (DELAY-6) -->
+            <div id="qr-validation-block" class="w-full flex justify-between items-end mt-4 fade-in-sequential" data-delay="6">
                 
-                <!-- QR de Validación Dinámico (Izquierda) - Solo visible en modo ADMIN -->
+                <!-- QR de Validación Dinámico (Izquierda) - Solo visible en modo ADMIN o PDF -->
                 <div id="qrcode-container" class="w-24 h-24 rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden">
-                    <!-- El QR se genera aquí y se hace visible solo si es 'mode=admin' -->
+                    <!-- El QR se genera aquí -->
                 </div>
                 
-                <!-- Bloque de Validación/ID (Derecha) - Alineación a la derecha y ocupa espacio restante -->
+                <!-- Bloque de Validación/ID (Derecha) -->
                 <div id="id-and-validation-block" class="text-right flex-grow">
                     <!-- Mensaje de Validación -->
                     <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 uppercase">⚠️ ZONA DE ALTO RIESGO</p>
                     <p id="validation-msg" class="text-xs mono-text text-gray-400 mt-1 transition duration-500">Validación: BIOMÉTRICO CONFIRMADO</p>
 
-                    <!-- ID de Registro Visible (Pegado a la derecha inferior) -->
+                    <!-- ID de Registro Visible -->
                     <p class="text-[0.6rem] uppercase mono-text opacity-70 tracking-widest leading-none mt-2">REGISTRO DE ACTIVO:</p>
                     <p id="profile-id" class="text-sm font-bold mono-text leading-none" style="letter-spacing: 1.5px;"></p>
                 </div>
@@ -298,16 +304,16 @@
 
         </div>
 
-        <!-- Contenido de Error -->
-        <div id="error-content" class="hidden w-full pt-12">
+        <!-- Contenido de Error (Aplicamos el estilo de aparición general aquí) -->
+        <div id="error-content" class="hidden w-full pt-12 flex flex-col items-center">
             <!-- Título de Error (DELAY-1) -->
-            <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch fade-in-sequential delay-1">ERROR [404]</p>
+            <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch fade-in-sequential" data-delay="1">ERROR [404]</p>
             
             <!-- Descripción del Error (DELAY-2) -->
-            <p class="text-xl mono-text text-gray-400 mt-4 mb-8 fade-in-sequential delay-2">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p>
+            <p class="text-xl mono-text text-gray-400 mt-4 mb-8 fade-in-sequential" data-delay="2">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p>
             
             <!-- Recuadro Rojo de Seguridad (Solo en Error) (DELAY-3) -->
-            <div id="error-security-warning" class="w-full p-2 border border-red-600 bg-red-900/20 rounded fade-in-sequential delay-3">
+            <div id="error-security-warning" class="w-full p-2 border border-red-600 bg-red-900/20 rounded fade-in-sequential" data-delay="3">
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
@@ -338,7 +344,6 @@
 
         // Elementos del DOM
         const loadingEl = document.getElementById('loading');
-        // El contenedor ahora es el que se usa para agregar las líneas
         const loadingTextContainerEl = document.getElementById('loading-text-container'); 
         const profileContentEl = document.getElementById('profile-content');
         const errorContentEl = document.getElementById('error-content');
@@ -353,15 +358,14 @@
         
         const photoEl = document.getElementById('profile-photo');
         const wantedPlaceholderEl = document.getElementById('wanted-placeholder');
-        const qrValidationBlockEl = document.getElementById('qr-validation-block');
         const qrcodeContainerEl = document.getElementById('qrcode-container');
         const idAndValidationBlockEl = document.getElementById('id-and-validation-block');
         const downloadButton = document.getElementById('download-button');
         const validationMsgEl = document.getElementById('validation-msg');
         const riskMsgEl = document.getElementById('risk-msg');
         const socialIconsInCardEl = document.getElementById('social-icons-in-card');
-        const securityWarningEl = document.getElementById('security-warning');
-
+        const securityWarningEl = document.getElementById('security-warning'); // Advertencia de seguridad general
+        const qrValidationBlockEl = document.getElementById('qr-validation-block'); // Bloque que contiene QR y ID
 
         // Función para obtener el parámetro 'id' y 'mode' de la URL
         function getUrlParams() {
@@ -372,13 +376,30 @@
             };
         }
         
-        // Función para convertir una URL de Google Drive de "view" a "direct content"
+        // FUNCIÓN CLAVE: Convierte la URL de Google Drive a formato de contenido directo
         function getDirectDriveUrl(url) {
-            const driveFileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (driveFileIdMatch && driveFileIdMatch[1]) {
-                const fileId = driveFileIdMatch[1];
+            if (!url) return '';
+            
+            // 1. Manejar URLs directas que ya usan /uc?export=view (no hacer nada)
+            if (url.includes('/uc?export=view')) {
+                return url;
+            }
+
+            // 2. Manejar URLs de la forma /file/d/FILE_ID/view
+            const viewMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)\/view/);
+            if (viewMatch && viewMatch[1]) {
+                const fileId = viewMatch[1];
                 return `https://drive.google.com/uc?export=view&id=${fileId}`;
             }
+
+            // 3. Manejar URLs de la forma /file/d/FILE_ID/edit o /open?id=FILE_ID
+            const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (idMatch && idMatch[1]) {
+                const fileId = idMatch[1];
+                return `https://drive.google.com/uc?export=view&id=${fileId}`;
+            }
+
+            // Si no se pudo procesar o es una URL que no es de Drive, retornarla sin modificar (fallará si no es directa)
             return url; 
         }
 
@@ -387,15 +408,13 @@
          */
         function startLoadingSequence(id) {
             
-            // Define la secuencia de mensajes de carga
             const loadingMessages = [
                 "CONECTANDO...", 
                 "CARGANDO DATOS...", 
                 "ENCRIPTANDO...",     
             ];
-            // Tiempo de espera por mensaje
-            const messageDelay = 800; // 0.8 segundos por mensaje
-            const MIN_LOADING_TIME = loadingMessages.length * messageDelay; // Mínimo 2.4s para que se vean todos
+            const messageDelay = 800; 
+            const MIN_LOADING_TIME = loadingMessages.length * messageDelay;
 
             
             let step = 0;
@@ -403,40 +422,33 @@
             let loadingTimerExpired = false;
             let fetchResult = null;
             
-            // MOSTRAR EL BLOQUE DE CARGA INMEDIATAMENTE
             loadingEl.classList.remove('hidden'); 
             
-            // 1. Función para mostrar la siguiente línea de carga
+            // 1. Función para mostrar la siguiente línea de carga (aparece una debajo de la otra)
             function showNextLoadingLine() {
                 if (step < loadingMessages.length) {
                     const msg = loadingMessages[step];
                     
-                    // Crea un nuevo elemento P
                     const newP = document.createElement('p');
                     newP.textContent = msg;
-                    // Aplica la clase de animación y un pequeño retraso
                     newP.classList.add('loading-line'); 
                     newP.style.animationDelay = `${step * 0.1}s`; 
                     
-                    // El último mensaje debe parpadear
                     if (step === loadingMessages.length - 1) {
                          newP.classList.add('animate-pulse');
                     } else {
                         newP.classList.remove('animate-pulse');
                     }
                     
-                    // Añade el elemento al contenedor
                     loadingTextContainerEl.appendChild(newP);
                     step++;
                     
-                    // Programa el siguiente mensaje
                     if (step < loadingMessages.length) {
                         setTimeout(showNextLoadingLine, messageDelay);
                     }
                 }
             }
             
-            // Inicia la visualización secuencial
             showNextLoadingLine();
             
 
@@ -457,13 +469,13 @@
             setTimeout(() => {
                 loadingTimerExpired = true;
                 processResult();
-            }, MIN_LOADING_TIME + 500); // Se añade medio segundo extra para asegurar que se vean todos
+            }, MIN_LOADING_TIME + 500); 
 
             // 4. Función para verificar y mostrar el resultado
             function processResult() {
                 if (fetchCompleted && loadingTimerExpired) {
                     
-                    // Ocultar el loader con un pequeño delay para que el último mensaje se vea
+                    // Ocultar el loader con un pequeño delay
                     setTimeout(() => {
                         loadingEl.classList.add('hidden'); 
                         
@@ -482,29 +494,24 @@
          */
         async function fetchProfileData(id) {
             
-            // Si no hay ID en la URL, simular un 404
             if (!id) {
                 console.warn("ADVERTENCIA: No se proporcionó 'id' en la URL. Mostrando error [404].");
                 return null;
             }
             
             try {
-                // El endpoint de SheetDB permite buscar directamente con un parámetro de columna.
-                // Asumo que el nombre de la columna es 'id_colaborador'.
+                // Buscamos por la columna id_colaborador
                 const url = `${API_ENDPOINT}/search?id_colaborador=${id}`;
                 const response = await fetch(url);
                 
-                // SheetDB devuelve un JSON Array. Si no encuentra nada, devuelve un array vacío [].
                 const data = await response.json(); 
-                
-                // El perfil será el primer elemento si existe
                 const user = data[0]; 
 
                 if (user && user.id_colaborador) {
                     return { user };
                 } else {
                     console.warn(`ID de colaborador no encontrado en la API: ${id}`);
-                    return null; // Devuelve null si no hay resultados o el ID no coincide
+                    return null;
                 }
 
             } catch (error) {
@@ -521,45 +528,48 @@
             statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500');
             profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch');
             profileStatusEl.classList.add('terminal-text');
-            photoEl.classList.remove('grayscale-photo');
-            photoEl.classList.remove('hidden');
+            photoEl.classList.remove('grayscale-photo', 'hidden');
             wantedPlaceholderEl.classList.add('hidden');
             
             gafetContentEl.style.borderColor = 'var(--color-activo)';
             gafetContentEl.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.6)';
             
+            const normalizedStatus = status.toUpperCase();
+
             // Lógica de visualización y texto de estado
-            if (status === 'PAUSA') {
+            if (normalizedStatus === 'PAUSA') {
                 gafetContentEl.classList.add('status-pausa');
-                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : status; 
+                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : normalizedStatus; 
                 
-                // Estilo visual de alerta
                 statusBoxEl.classList.add('bg-yellow-900/40', 'border-yellow-500');
                 profileStatusEl.classList.add('text-yellow-400');
                 
-                // Efecto visual requerido
                 photoEl.classList.add('grayscale-photo');
-                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Validación siempre visible para PAUSA
-            } else if (status === 'ELIMINADO') { 
-                gafetContentEl.classList.add('status-baja');
-                profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : status;
+                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
                 
-                // Estilo visual de baja (gris)
+                securityWarningEl.classList.add('hidden'); // Oculto en PAUSA
+                
+            } else if (normalizedStatus === 'ELIMINADO' || normalizedStatus === 'BAJA') { 
+                gafetContentEl.classList.add('status-baja');
+                profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : 'ELIMINADO';
+                
                 statusBoxEl.classList.add('bg-gray-900/40', 'border-gray-500');
                 profileStatusEl.classList.remove('terminal-text');
                 profileStatusEl.classList.add('text-gray-400');
 
-                // Efecto visual requerido: SE BUSCA
                 photoEl.classList.add('hidden');
                 wantedPlaceholderEl.classList.remove('hidden');
-                validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO'; // Mensaje específico
-            } else { // ACTIVO
-                profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : status;
+                validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO'; 
                 
-                // Estilo visual activo (verde)
+                securityWarningEl.classList.remove('hidden'); // VISIBLE en ELIMINADO
+            } else { // ACTIVO (Default si hay datos y el estado no es PAUSA/ELIMINADO)
+                profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : 'ACTIVO';
+                
                 statusBoxEl.classList.add('bg-green-900/40', 'border-green-500');
                 profileStatusEl.classList.add(isProtocolario ? '' : 'animate-glitch');
-                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Validación siempre visible para ACTIVO
+                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; 
+                
+                securityWarningEl.classList.add('hidden'); // Oculto en ACTIVO
             }
         }
 
@@ -573,42 +583,33 @@
             profileRoleEl.textContent = user.rol_campo || 'SIN ROL ASIGNADO';
             profileIdEl.textContent = user.id_colaborador || 'N/A';
             
-            // Carga la foto, convirtiendo la URL de Drive si es necesario
+            // Carga la foto, USANDO LA FUNCIÓN MEJORADA
             const rawPhotoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
             const finalPhotoUrl = getDirectDriveUrl(rawPhotoUrl);
-            
             photoEl.src = finalPhotoUrl;
             
             // Normaliza el estado (ACTIVO, PAUSA, ELIMINADO). 
-            // Si el estado está vacío o es un valor no reconocido, por defecto se usa ELIMINADO/404.
             const status = (user.estado || 'ELIMINADO').toUpperCase();
             
             // Aplica estilos en modo operativo (default)
             applyStatusStyles(status, false);
             
-            // Controla la visibilidad de los bloques basados en el estado
+            // Controla la visibilidad de bloques y advertencias
             if (status === 'ACTIVO' || status === 'PAUSA') {
                 qrValidationBlockEl.classList.remove('hidden');
-                if (status === 'ACTIVO') {
-                    socialIconsInCardEl.classList.remove('hidden'); 
-                } else {
-                    socialIconsInCardEl.classList.add('hidden');
-                }
-                securityWarningEl.classList.add('hidden');
-                
-            } else { // ELIMINADO
+                socialIconsInCardEl.classList.remove('hidden'); 
+                securityWarningEl.classList.add('hidden'); // Ocultar
+            } else { // ELIMINADO/NO ENCONTRADO
                 qrValidationBlockEl.classList.add('hidden');
                 socialIconsInCardEl.classList.add('hidden'); 
-                securityWarningEl.classList.add('hidden'); 
+                securityWarningEl.classList.remove('hidden'); // Mostrar
             }
 
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
-            if (isAdmin) {
+            if (isAdmin && user.id_colaborador) {
                 const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
                 generateQrCode(cleanUrl);
-                if (user.id_colaborador) {
-                    qrcodeContainerEl.classList.remove('hidden'); 
-                }
+                qrcodeContainerEl.classList.remove('hidden'); 
             } else {
                 qrcodeContainerEl.classList.add('hidden'); 
             }
@@ -635,8 +636,17 @@
 
         // Función para mostrar el error
         function showError() {
-            // El loader ya fue ocultado en processResult()
+            // Configurar el estado como ELIMINADO para mostrar el placeholder y la advertencia
+            applyStatusStyles('ELIMINADO', false); 
+
+            // Ocultar el contenido del perfil (si acaso se mostró por un error de lógica)
+            profileContentEl.classList.add('hidden');
+
+            // Mostrar el contenido de error
             errorContentEl.classList.remove('hidden');
+
+            // Asegurar que la advertencia de seguridad es visible en la pantalla de error (ya cubierta por applyStatusStyles('ELIMINADO'))
+            securityWarningEl.classList.add('hidden'); // El error usa su propia advertencia interna
         }
         
         // Función para generar el QR (usa la librería qrcode.min.js)
@@ -659,25 +669,29 @@
             const params = getUrlParams();
             const originalStatusText = profileStatusEl.textContent.trim(); 
 
-            // 2. Aplica estilos de modo protocolo para la impresión:
+            // 1. Prepara el entorno para PDF
             gafetContentEl.classList.add('pdf-mode'); 
             const sequentialElements = document.querySelectorAll('.fade-in-sequential');
             sequentialElements.forEach(el => el.style.animation = 'none');
 
+            // Asegura visibilidad para la impresión
             qrValidationBlockEl.classList.remove('hidden'); 
             idAndValidationBlockEl.classList.remove('hidden');
             qrcodeContainerEl.classList.remove('hidden');
             socialIconsInCardEl.classList.add('hidden'); 
             riskMsgEl.classList.add('hidden');
-            securityWarningEl.classList.add('hidden');
+            securityWarningEl.classList.add('hidden'); // Ocultar la advertencia si está visible
+            
+            // Revertir filtros visuales para impresión
             photoEl.classList.remove('grayscale-photo', 'hidden'); 
             wantedPlaceholderEl.classList.add('hidden'); 
             validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
             actionButtonsEl.classList.add('hidden');
 
+            // Aplicar el texto de estado protocolario
             applyStatusStyles(originalStatusText, true);
             
-            // 3. Genera el PDF
+            // 2. Genera el PDF
             html2pdf(element, {
                 margin: 0.5,
                 filename: filename,
@@ -685,28 +699,33 @@
                 html2canvas: { scale: 3, logging: false, useCORS: true },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             }).then(() => {
-                // 4. Revierte al modo Operativo original (después de la descarga)
+                // 3. Revierte al modo Operativo original (después de la descarga)
                 gafetContentEl.classList.remove('pdf-mode');
                 sequentialElements.forEach(el => el.style.animation = '');
                 riskMsgEl.classList.remove('hidden');
+                
+                // Re-aplicar el estado original (operativo)
                 applyStatusStyles(originalStatusText, false);
                 configureActionButtons(params.mode);
                 
-                const currentStatus = profileStatusEl.textContent.trim(); 
+                const currentStatus = profileStatusEl.textContent.trim().toUpperCase(); 
                 
+                // Re-establecer visibilidad de bloques según el modo y estado
                 if (currentStatus === 'ACTIVO' || currentStatus === 'PAUSA') {
                     qrValidationBlockEl.classList.remove('hidden');
-                    if (currentStatus === 'ACTIVO') {
-                        socialIconsInCardEl.classList.remove('hidden');
-                    }
-                    if (params.mode === 'admin') {
-                        qrcodeContainerEl.classList.remove('hidden');
-                    } else {
-                        qrcodeContainerEl.classList.add('hidden');
-                    }
-                } else {
+                    socialIconsInCardEl.classList.remove('hidden');
+                    securityWarningEl.classList.add('hidden');
+                } else { // ELIMINADO/BAJA
                     qrValidationBlockEl.classList.add('hidden');
                     socialIconsInCardEl.classList.add('hidden');
+                    securityWarningEl.classList.remove('hidden'); // Mostrar advertencia
+                }
+
+                // Re-establecer visibilidad del QR si es modo admin
+                if (params.mode === 'admin' && profileIdEl.textContent !== 'N/A') {
+                    qrcodeContainerEl.classList.remove('hidden');
+                } else {
+                    qrcodeContainerEl.classList.add('hidden');
                 }
             });
         });
@@ -715,7 +734,6 @@
         // Ejecución al cargar la página
         window.onload = function() {
             const { id } = getUrlParams();
-            // Duración total de la animación del encabezado
             const HEADER_ANIMATION_DURATION = 2000; // 2.0 segundos
 
             // Espera a que termine la animación de la cabecera
@@ -727,4 +745,3 @@
     </script>
 </body>
 </html>
-

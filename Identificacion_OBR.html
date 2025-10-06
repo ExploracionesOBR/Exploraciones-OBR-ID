@@ -36,13 +36,13 @@
 
         /* AJUSTE CLAVE: Usamos min-h-screen y max-w-xs para que el marco sea más largo y se adapte */
         .card-container {
-            min-height: 100vh; /* Se extiende al máximo de la pantalla */
+            min-height: 100vh; 
             background-color: var(--color-fondo);
             border: 4px solid var(--color-activo);
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
-            padding: 1.5rem; /* REDUCIDO DE 2rem A 1.5rem */
+            padding: 1.25rem; 
             width: 100%;
-            max-width: 25rem; /* Max-width para un buen tamaño de gafete */
+            max-width: 25rem; 
             transition: all 0.5s ease;
         }
         
@@ -90,12 +90,12 @@
         .status-pausa {
             border-color: var(--color-pausa) !important;
             box-shadow: 0 0 30px rgba(245, 158, 11, 0.8) !important;
-            animation: pulse-pausa 1s infinite alternate; /* Alerta intermitente */
+            animation: pulse-pausa 1s infinite alternate; 
         }
         .status-baja {
             border-color: var(--color-baja) !important;
             box-shadow: none !important;
-            filter: grayscale(80%); /* Tono gris */
+            filter: grayscale(80%); 
         }
 
         @keyframes pulse-pausa {
@@ -121,7 +121,7 @@
 
         /* Clase para el PDF: Elimina sombras y fondos para impresión limpia */
         .pdf-mode .terminal-text,
-        .pdf-mode #profile-status { /* Asegurar que se limpia el text-shadow de todos los elementos clave */
+        .pdf-mode #profile-status { 
             text-shadow: none !important;
             animation: none !important;
         }
@@ -210,14 +210,14 @@
     <!-- Contenedor principal de la tarjeta (para PDF y visualización) -->
     <div id="gafet-content" class="card-container flex flex-col items-center text-center card-texture-bg">
         <!-- Título principal con el efecto de Máquina de Escribir -->
-        <h1 class="text-3xl font-black terminal-text leading-tight mb-1 text-center flex flex-col items-center"> <!-- TAMAÑO REDUCIDO DE 4XL A 3XL -->
+        <h1 class="text-3xl font-black terminal-text leading-tight mb-1 text-center flex flex-col items-center"> 
             <span class="line-1-instant">EXPLORACIONES</span>
             <span class="typing-line typing-line-2 mt-1">OBR</span>
         </h1>
-        <div class="h-0.5 w-full bg-green-500 opacity-70 my-2 shadow-md shadow-[#10b981]/50" id="divider"></div> <!-- MARGIN REDUCIDO DE my-3 A my-2 -->
+        <div class="h-0.5 w-full bg-green-500 opacity-70 my-2 shadow-md shadow-[#10b981]/50" id="divider"></div> 
 
         <!-- Loader inicial y dinámico - CONTENEDOR DE MENSAJES DE CARGA -->
-        <div id="loading" class="terminal-text text-xl pt-10 flex flex-col items-center space-y-2 hidden"> <!-- PT REDUCIDO DE 12 A 10 -->
+        <div id="loading" class="terminal-text text-xl pt-10 flex flex-col items-center space-y-2 hidden"> 
             <!-- Los mensajes de carga aparecerán aquí dinámicamente -->
             <div id="loading-text-container"></div>
         </div>
@@ -226,11 +226,11 @@
         <div id="profile-content" class="hidden w-full flex-grow flex flex-col justify-between">
             
             <!-- SECCIÓN SUPERIOR: Foto y Datos (DELAY-1) -->
-            <div class="w-full flex flex-col items-center fade-in-sequential" data-delay="1">
+            <!-- MARGIN NEGATIVO PARA COMPACTAR MÁS -->
+            <div class="w-full flex flex-col items-center -mt-4 fade-in-sequential" data-delay="1"> 
                 
-                <!-- Marco de la Foto (Dimensiones: w-40 h-48) -->
-                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-2 overflow-hidden relative"> <!-- MARGIN REDUCIDO DE mb-4 A mb-2 -->
-                    <!-- ATRIBUTO crossorigin="anonymous" AÑADIDO PARA MEJOR COMPATIBILIDAD CON CORS/PDF -->
+                <!-- Marco de la Foto: RESTAURADO A W-40 H-48 -->
+                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-0.5 overflow-hidden relative"> <!-- MARGIN REDUCIDO A mb-0.5 -->
                     <img id="profile-photo" 
                          src="" 
                          alt="Foto de Perfil" 
@@ -238,7 +238,6 @@
                          crossorigin="anonymous" 
                          onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
                     
-                    <!-- El placeholder ahora tiene width: 100% y height: 100% -->
                     <div id="wanted-placeholder" class="wanted-placeholder absolute flex items-center justify-center hidden">
                         <span class="text-3xl font-black terminal-text text-white transform rotate-12">SE BUSCA</span>
                     </div>
@@ -246,39 +245,39 @@
             </div>
 
             <!-- Estado de Activación (DELAY-2) -->
-            <div id="status-box" class="p-2 mb-3 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2"> <!-- PADDING REDUCIDO DE p-3 A p-2 -->
+            <div id="status-box" class="py-1 px-2 mb-1 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2"> <!-- PADDING VERTICAL REDUCIDO A py-1 y MARGIN DE mb-2 a mb-1 -->
                 <p class="text-xs uppercase mono-text">Estado del Perfil</p>
-                <p id="profile-status" class="text-xl font-extrabold terminal-text mt-0.5 transition duration-500"></p> <!-- TAMAÑO REDUCIDO DE 2XL A XL Y MARGIN REDUCIDO -->
+                <p id="profile-status" class="text-xl font-extrabold terminal-text mt-0.5 transition duration-500"></p> 
             </div>
             
             <!-- Datos del Colaborador (Nombre y Rol) (DELAY-3) -->
-            <div class="mb-2 w-full fade-in-sequential" data-delay="3">
-                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-1">Nombre de Operativo</p> <!-- MARGIN REDUCIDO DE mt-2 A mt-1 -->
-                <p id="profile-name" class="text-2xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-0.5"></p> <!-- TAMAÑO REDUCIDO DE 3XL A 2XL Y PADDING REDUCIDO -->
+            <div class="mb-1 w-full fade-in-sequential" data-delay="3"> <!-- MARGIN REDUCIDO DE mb-1 -->
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 my-0.5">Nombre de Operativo</p> <!-- MARGIN REDUCIDO A my-0.5 -->
+                <p id="profile-name" class="text-2xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-0.5"></p> 
                 
-                <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-2">Rol de Activo</p> <!-- MARGIN REDUCIDO DE mt-3 A mt-2 -->
-                <p id="profile-role" class="text-xl font-bold terminal-text leading-tight"></p> <!-- TAMAÑO REDUCIDO DE 2XL A XL -->
+                <p class="text-xs uppercase mono-text text-green-300 opacity-80 my-0.5">Rol de Activo</p> <!-- MARGIN REDUCIDO A my-0.5 -->
+                <p id="profile-role" class="text-xl font-bold terminal-text leading-tight"></p> 
             </div>
             
             <!-- BLOQUE: ICONOS DE REDES SOCIALES (DELAY-4) -->
-            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-3 mb-1 fade-in-sequential" data-delay="4"> <!-- MARGIN REDUCIDO DE mt-4/mb-2 A mt-3/mb-1 -->
+            <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-2 mb-1 fade-in-sequential" data-delay="4"> 
                 <!-- TikTok -->
                 <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2">
-                    <i class="fab fa-tiktok text-xl social-icon"></i> <!-- TAMAÑO REDUCIDO DE 2XL A XL -->
+                    <i class="fab fa-tiktok text-xl social-icon"></i> 
                 </a>
                 <!-- Facebook -->
                 <a href="https://www.facebook.com/people/Exploraciones-OBR/61580725413198/" target="_blank" class="social-icon-wrapper rounded-full p-2">
-                    <i class="fab fa-facebook-f text-xl social-icon"></i> <!-- TAMAÑO REDUCIDO DE 2XL A XL -->
+                    <i class="fab fa-facebook-f text-xl social-icon"></i> 
                 </a>
                 <!-- YouTube -->
                 <a href="https://www.youtube.com/@EXPLORACIONESOBR" target="_blank" class="social-icon-wrapper rounded-full p-2">
-                    <i class="fab fa-youtube text-xl social-icon"></i> <!-- TAMAÑO REDUCIDO DE 2XL A XL -->
+                    <i class="fab fa-youtube text-xl social-icon"></i> 
                 </a>
             </div>
             <!-- FIN BLOQUE ICONOS -->
             
-            <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD (Oculto en ACTIVO/PAUSA, visible en ELIMINADO/Error) -->
-            <div id="security-warning" class="w-full mt-1 mb-1 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5"> <!-- MARGIN REDUCIDO DE mt-2/mb-2 A mt-1/mb-1 -->
+            <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD -->
+            <div id="security-warning" class="w-full mt-1 mb-1 py-1 px-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5"> <!-- PADDING VERTICAL REDUCIDO A py-1 -->
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
@@ -289,34 +288,34 @@
             <div id="qr-validation-block" class="w-full flex justify-between items-end mt-2 fade-in-sequential" data-delay="6">
                 
                 <!-- QR de Validación Dinámico (Izquierda) - Solo visible en modo ADMIN o PDF -->
-                <div id="qrcode-container" class="w-20 h-20 rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden"> <!-- TAMAÑO REDUCIDO DE w-24/h-24 A w-20/h-20 -->
+                <div id="qrcode-container" class="w-[90px] h-[90px] rounded-lg shadow-xl bg-white p-1 transition duration-500 hidden"> <!-- RESTAURADO A W-[90PX] H-[90PX] -->
                     <!-- El QR se genera aquí -->
                 </div>
                 
                 <!-- Bloque de Validación/ID (Derecha) -->
                 <div id="id-and-validation-block" class="text-right flex-grow">
                     <!-- Mensaje de Validación -->
-                    <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 uppercase">⚠️ ZONA DE ALTO RIESGO</p>
-                    <p id="validation-msg" class="text-xs mono-text text-gray-400 mt-0.5 transition duration-500">Validación: BIOMÉTRICO CONFIRMADO</p> <!-- MARGIN REDUCIDO DE mt-1 A mt-0.5 -->
+                    <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 uppercase leading-none">⚠️ ZONA DE ALTO RIESGO</p>
+                    <p id="validation-msg" class="text-xs mono-text text-gray-400 mt-0.5 transition duration-500 leading-none">Validación: BIOMÉTRICO CONFIRMADO</p> 
 
-                    <!-- ID de Registro Visible -->
-                    <p class="text-[0.6rem] uppercase mono-text opacity-70 tracking-widest leading-none mt-1">REGISTRO DE ACTIVO:</p> <!-- MARGIN REDUCIDO DE mt-2 A mt-1 -->
-                    <p id="profile-id" class="text-sm font-bold mono-text leading-none" style="letter-spacing: 1.5px;"></p>
+                    <!-- ID de Registro Visible: REDUCIDO A TEXT-XS -->
+                    <p class="text-[0.6rem] uppercase mono-text opacity-70 tracking-widest leading-none mt-1">REGISTRO DE ACTIVO:</p> 
+                    <p id="profile-id" class="text-xs font-bold mono-text leading-none" style="letter-spacing: 1.5px;"></p>
                 </div>
             </div>
 
         </div>
 
         <!-- Contenido de Error (Aplicamos el estilo de aparición general aquí) -->
-        <div id="error-content" class="hidden w-full pt-10 flex flex-col items-center"> <!-- PT REDUCIDO DE 12 A 10 -->
+        <div id="error-content" class="hidden w-full pt-10 flex flex-col items-center"> 
             <!-- Título de Error (DELAY-1) -->
             <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch fade-in-sequential" data-delay="1">ERROR [404]</p>
             
             <!-- Descripción del Error (DELAY-2) -->
-            <p class="text-lg mono-text text-gray-400 mt-3 mb-6 fade-in-sequential" data-delay="2">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p> <!-- TAMAÑO REDUCIDO DE XL A LG Y MARGIN REDUCIDO -->
+            <p class="text-lg mono-text text-gray-400 mt-3 mb-6 fade-in-sequential" data-delay="2">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p> 
             
             <!-- Recuadro Rojo de Seguridad (Solo en Error) (DELAY-3) -->
-            <div id="error-security-warning" class="w-full p-2 border border-red-600 bg-red-900/20 rounded fade-in-sequential" data-delay="3">
+            <div id="error-security-warning" class="w-full py-1 px-2 border border-red-600 bg-red-900/20 rounded fade-in-sequential" data-delay="3"> <!-- PADDING VERTICAL REDUCIDO A py-1 -->
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
                 </p>
@@ -326,7 +325,7 @@
     </div>
 
     <!-- Bloque de botones de acción antiguo (solo para modo ADMIN) -->
-    <div id="action-buttons" class="mt-4 w-full max-w-md space-y-2 hidden"> <!-- MARGIN REDUCIDO DE mt-8 A mt-4 -->
+    <div id="action-buttons" class="mt-4 w-full max-w-md space-y-2 hidden"> 
         <h2 id="action-buttons-header" class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
         
         <!-- Botón para Descargar Perfil (PDF) - Solo visible en modo ADMIN -->
@@ -342,7 +341,7 @@
         const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
         // =========================================================================================================
 
-        // URL base de la aplicación para el QR (usando el formato de GitHub Pages que especificaste)
+        // URL base de la aplicación para el QR 
         const BASE_URL = 'https://exploracionesobr.github.io/Exploraciones-OBR-ID/profile_gafet_dinamico.html';
 
         // Elementos del DOM
@@ -367,8 +366,8 @@
         const validationMsgEl = document.getElementById('validation-msg');
         const riskMsgEl = document.getElementById('risk-msg');
         const socialIconsInCardEl = document.getElementById('social-icons-in-card');
-        const securityWarningEl = document.getElementById('security-warning'); // Advertencia de seguridad general
-        const qrValidationBlockEl = document.getElementById('qr-validation-block'); // Bloque que contiene QR y ID
+        const securityWarningEl = document.getElementById('security-warning'); 
+        const qrValidationBlockEl = document.getElementById('qr-validation-block'); 
         
         // Elementos con estilos terminales que podrían tener text-shadow/animaciones
         const terminalTextElements = document.querySelectorAll('.terminal-text');
@@ -380,33 +379,6 @@
                 id: params.get('id'),
                 mode: params.get('mode')
             };
-        }
-        
-        // FUNCIÓN CLAVE: Convierte la URL de Google Drive a formato de contenido directo
-        function getDirectDriveUrl(url) {
-            if (!url) return '';
-            
-            // 1. Manejar URLs directas que ya usan /uc?export=view (no hacer nada)
-            if (url.includes('/uc?export=view')) {
-                return url;
-            }
-
-            // 2. Manejar URLs de la forma /file/d/FILE_ID/view
-            const viewMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)\/view/);
-            if (viewMatch && viewMatch[1]) {
-                const fileId = viewMatch[1];
-                return `https://drive.google.com/uc?export=view&id=${fileId}`;
-            }
-
-            // 3. Manejar URLs de la forma /file/d/FILE_ID/edit o /open?id=FILE_ID
-            const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (idMatch && idMatch[1]) {
-                const fileId = idMatch[1];
-                return `https://drive.google.com/uc?export=view&id=${fileId}`;
-            }
-
-            // Si no se pudo procesar o es una URL que no es de Drive, retornarla sin modificar (fallará si no es directa)
-            return url; 
         }
 
         /**
@@ -548,9 +520,9 @@
             const normalizedStatus = status.toUpperCase();
 
             // Lógica de visualización y texto de estado
-            if (normalizedStatus === 'PAUSA') {
+            if (normalizedStatus === 'PAUSA' || normalizedStatus === 'ESTE PERFIL ESTÁ EN PAUSA') {
                 gafetContentEl.classList.add('status-pausa');
-                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : normalizedStatus; 
+                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : 'PAUSA'; 
                 
                 statusBoxEl.classList.add('bg-yellow-900/40', 'border-yellow-500');
                 profileStatusEl.classList.add('text-yellow-400');
@@ -558,7 +530,7 @@
                 photoEl.classList.add('grayscale-photo');
                 validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
                 
-                securityWarningEl.classList.add('hidden'); // Oculto en PAUSA
+                securityWarningEl.classList.add('hidden'); 
                 
             } else if (normalizedStatus === 'ELIMINADO' || normalizedStatus === 'BAJA' || normalizedStatus === 'PERFIL ELIMINADO') { 
                 gafetContentEl.classList.add('status-baja');
@@ -572,7 +544,7 @@
                 wantedPlaceholderEl.classList.remove('hidden');
                 validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO'; 
                 
-                securityWarningEl.classList.remove('hidden'); // VISIBLE en ELIMINADO
+                securityWarningEl.classList.remove('hidden'); 
             } else { // ACTIVO (Default si hay datos y el estado no es PAUSA/ELIMINADO)
                 profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : 'ACTIVO';
                 
@@ -580,7 +552,7 @@
                 profileStatusEl.classList.add(isProtocolario ? '' : 'animate-glitch');
                 validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; 
                 
-                securityWarningEl.classList.add('hidden'); // Oculto en ACTIVO
+                securityWarningEl.classList.add('hidden'); 
             }
         }
 
@@ -594,12 +566,11 @@
             profileRoleEl.textContent = user.rol_campo || 'SIN ROL ASIGNADO';
             profileIdEl.textContent = user.id_colaborador || 'N/A';
             
-            // Carga la foto, USANDO LA FUNCIÓN MEJORADA
+            // Carga la foto - AHORA USA LA URL DIRECTA DE LA API
             const rawPhotoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
-            const finalPhotoUrl = getDirectDriveUrl(rawPhotoUrl);
-            photoEl.src = finalPhotoUrl;
+            photoEl.src = rawPhotoUrl;
             
-            // Normaliza el estado (ACTIVO, PAUSA, ELIMINADO). 
+            // Normaliza el estado 
             const status = (user.estado || 'ELIMINADO').toUpperCase();
             
             // Aplica estilos en modo operativo (default)
@@ -608,18 +579,16 @@
             // Controla la visibilidad de bloques y advertencias
             if (status === 'ACTIVO' || status === 'PAUSA') {
                 qrValidationBlockEl.classList.remove('hidden');
-                securityWarningEl.classList.add('hidden'); // Ocultar
+                securityWarningEl.classList.add('hidden'); 
             } else { // ELIMINADO/NO ENCONTRADO
                 qrValidationBlockEl.classList.add('hidden');
-                securityWarningEl.classList.remove('hidden'); // Mostrar
+                securityWarningEl.classList.remove('hidden'); 
             }
             
             // === LÓGICA DE VISIBILIDAD DE LOGOS DE REDES SOCIALES ===
             if (isAdmin) {
-                // Ocultar logos en modo admin
                 socialIconsInCardEl.classList.add('hidden'); 
             } else {
-                // Mostrar logos en modo operativo (no admin)
                 socialIconsInCardEl.classList.remove('hidden'); 
             }
             // ========================================================
@@ -627,8 +596,7 @@
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
             if (isAdmin && user.id_colaborador) {
                 const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
-                console.log(`[DEBUG] Generando QR para URL: ${cleanUrl}`); // Log de diagnóstico
-                generateQrCode(cleanUrl);
+                generateQrCode(cleanUrl, !gafetContentEl.classList.contains('pdf-mode')); // Pasa el estado para elegir el color
                 qrcodeContainerEl.classList.remove('hidden'); 
             } else {
                 qrcodeContainerEl.classList.add('hidden'); 
@@ -659,24 +627,27 @@
             // Configurar el estado como ELIMINADO para mostrar el placeholder y la advertencia
             applyStatusStyles('ELIMINADO', false); 
 
-            // Ocultar el contenido del perfil (si acaso se mostró por un error de lógica)
+            // Ocultar el contenido del perfil 
             profileContentEl.classList.add('hidden');
 
             // Mostrar el contenido de error
             errorContentEl.classList.remove('hidden');
 
-            // Asegurar que la advertencia de seguridad es visible en la pantalla de error (ya cubierta por applyStatusStyles('ELIMINADO'))
-            securityWarningEl.classList.add('hidden'); // El error usa su propia advertencia interna
+            // Asegurar que la advertencia de seguridad es visible 
+            securityWarningEl.classList.add('hidden'); 
         }
         
-        // Función para generar el QR (usa la librería qrcode.min.js)
-        function generateQrCode(url) {
+        // Función para generar el QR (Añadido 'isDynamicMode' para cambiar el color)
+        function generateQrCode(url, isDynamicMode) {
             qrcodeContainerEl.innerHTML = '';
+            // Si no es PDF (es decir, modo dinámico), usamos el color de fondo. Si es PDF, usamos negro sólido.
+            const colorDark = isDynamicMode ? 'var(--color-fondo)' : '#000000'; // CLAVE PARA COMPATIBILIDAD CON PDF
+
             new QRCode(qrcodeContainerEl, {
                 text: url,
-                width: 80, // TAMAÑO REDUCIDO
-                height: 80, // TAMAÑO REDUCIDO
-                colorDark : "var(--color-fondo)",
+                width: 90, // TAMAÑO RESTAURADO
+                height: 90, // TAMAÑO RESTAURADO
+                colorDark : colorDark,
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
@@ -703,16 +674,23 @@
             // Limpiar text-shadow de todos los elementos .terminal-text
             terminalTextElements.forEach(el => {
                 el.style.textShadow = 'none';
-                el.classList.remove('animate-glitch'); // Limpiar glitch por si acaso
+                el.classList.remove('animate-glitch'); 
             });
+
+            // Re-generar QR forzando el color negro para el PDF
+            if (profileIdEl.textContent !== 'N/A') {
+                 const cleanUrl = `${BASE_URL}?id=${profileIdEl.textContent}`;
+                 generateQrCode(cleanUrl, false); // false = Modo estático (PDF)
+            }
+
 
             // Asegura visibilidad para la impresión
             qrValidationBlockEl.classList.remove('hidden'); 
             idAndValidationBlockEl.classList.remove('hidden');
-            qrcodeContainerEl.classList.remove('hidden'); // FORZAR VISIBILIDAD
+            qrcodeContainerEl.classList.remove('hidden'); 
             socialIconsInCardEl.classList.add('hidden'); 
             riskMsgEl.classList.add('hidden');
-            securityWarningEl.classList.add('hidden'); // Ocultar la advertencia si está visible
+            securityWarningEl.classList.add('hidden'); 
             
             // Revertir filtros visuales para impresión
             photoEl.classList.remove('grayscale-photo', 'hidden'); 
@@ -723,66 +701,72 @@
             // Aplicar el texto de estado protocolario
             applyStatusStyles(originalStatusText, true);
             
-            // 2. Genera el PDF
-            html2pdf(element, {
-                margin: 0.5,
-                filename: filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                // AJUSTES CLAVE para compatibilidad con CORS y estilos
-                html2canvas: { scale: 3, logging: false, useCORS: true, allowTaint: true }, 
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            }).then(() => {
-                // 3. Revierte al modo Operativo original (después de la descarga)
-                gafetContentEl.classList.remove('pdf-mode');
+            // 2. SOLUCIÓN CRÍTICA: Pausa de 100ms para asegurar que todos los estilos y el QR se apliquen antes de la captura.
+            setTimeout(() => {
                 
-                // Restablecer estilos de texto y animaciones
-                terminalTextElements.forEach(el => {
-                    // Restablecer text-shadow definido en CSS
-                    el.style.textShadow = ''; 
-                });
-                
-                sequentialElements.forEach(el => el.style.animation = '');
-                riskMsgEl.classList.remove('hidden');
-                
-                // Re-aplicar el estado original (operativo)
-                applyStatusStyles(originalStatusText, false);
-                configureActionButtons(params.mode);
-                
-                const currentStatus = profileStatusEl.textContent.trim().toUpperCase(); 
-                
-                // Re-establecer visibilidad de bloques según el modo y estado
-                if (currentStatus === 'ACTIVO' || currentStatus === 'PAUSA' || currentStatus === 'ESTE PERFIL ESTÁ EN PAUSA') {
-                    qrValidationBlockEl.classList.remove('hidden');
-                } else { // ELIMINADO/BAJA
-                    qrValidationBlockEl.classList.add('hidden');
-                    securityWarningEl.classList.remove('hidden'); // Mostrar advertencia
-                }
-                
-                // Re-establecer visibilidad de logos (si no es admin)
-                if (params.mode !== 'admin') {
-                    socialIconsInCardEl.classList.remove('hidden');
-                } else {
-                    socialIconsInCardEl.classList.add('hidden');
-                }
+                // 3. Genera el PDF
+                html2pdf(element, {
+                    margin: 0.5,
+                    filename: filename,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    // AJUSTES CLAVE para compatibilidad con CORS y estilos
+                    html2canvas: { scale: 3, logging: false, useCORS: true, allowTaint: true }, 
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                }).then(() => {
+                    // 4. Revierte al modo Operativo original (después de la descarga)
+                    gafetContentEl.classList.remove('pdf-mode');
+                    
+                    // Restablecer estilos de texto y animaciones
+                    terminalTextElements.forEach(el => {
+                        // Restablecer text-shadow definido en CSS
+                        el.style.textShadow = ''; 
+                    });
+                    
+                    sequentialElements.forEach(el => el.style.animation = '');
+                    riskMsgEl.classList.remove('hidden');
+                    
+                    // Re-aplicar el estado original (operativo)
+                    applyStatusStyles(originalStatusText, false);
+                    configureActionButtons(params.mode);
+                    
+                    const currentStatus = profileStatusEl.textContent.trim().toUpperCase(); 
+                    
+                    // Re-establecer visibilidad de bloques según el modo y estado
+                    if (currentStatus.includes('ACTIVO') || currentStatus.includes('PAUSA')) {
+                        qrValidationBlockEl.classList.remove('hidden');
+                    } else { // ELIMINADO/BAJA
+                        qrValidationBlockEl.classList.add('hidden');
+                        securityWarningEl.classList.remove('hidden'); 
+                    }
+                    
+                    // Re-establecer visibilidad de logos (si no es admin)
+                    if (params.mode !== 'admin') {
+                        socialIconsInCardEl.classList.remove('hidden');
+                    } else {
+                        socialIconsInCardEl.classList.add('hidden');
+                    }
 
-                // Re-establecer visibilidad del QR si es modo admin
-                if (params.mode === 'admin' && profileIdEl.textContent !== 'N/A') {
-                    qrcodeContainerEl.classList.remove('hidden');
-                } else {
-                    qrcodeContainerEl.classList.add('hidden');
-                }
-            });
+                    // Re-establecer visibilidad del QR si es modo admin
+                    if (params.mode === 'admin' && profileIdEl.textContent !== 'N/A') {
+                        // Re-generar QR para el modo dinámico
+                        const cleanUrl = `${BASE_URL}?id=${profileIdEl.textContent}`;
+                        generateQrCode(cleanUrl, true); // true = Modo dinámico (con color de fondo)
+                        qrcodeContainerEl.classList.remove('hidden');
+                    } else {
+                        qrcodeContainerEl.classList.add('hidden');
+                    }
+                });
+            }, 100); // PAUSA CRÍTICA DE 100ms
         });
 
 
         // Ejecución al cargar la página
         window.onload = function() {
             const { id } = getUrlParams();
-            const HEADER_ANIMATION_DURATION = 2000; // 2.0 segundos
+            const HEADER_ANIMATION_DURATION = 2000; 
 
             // Espera a que termine la animación de la cabecera
             setTimeout(() => {
-                // Inicia la secuencia de carga, que maneja el fetch y la visualización final
                 startLoadingSequence(id);
             }, HEADER_ANIMATION_DURATION);
         };

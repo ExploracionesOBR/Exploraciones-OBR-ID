@@ -6,6 +6,7 @@
     <title>EXPLORACIONES OBR - Identificación de Operativo</title>
     <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Font Awesome para los iconos de redes sociales -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDkGkXJEDoXekD6+l9sN+z5kQ7s/Q7Z6q08e+k7E+h7D/0f/E0A2A5Z7tY3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -44,7 +45,7 @@
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
             padding: 2rem;
             width: 100%;
-            max-width: 28rem; /* RESTAURADO al tamaño original para que el marco no se vea descuadrado */
+            max-width: 28rem;
             transition: all 0.5s ease;
         }
         
@@ -181,17 +182,17 @@
             <div class="w-full flex flex-col items-center">
                 
                 <!-- Marco de la Foto (Contenedor para aplicar filtros o reemplazo) -->
-                <!-- Se cambió border-3 por border-4 (Tailwind) para consistencia -->
-                <div id="photo-frame" class="w-40 h-48 border-4 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden">
+                <!-- Se agregó 'photo-frame-activo' para un control de estilo más fino en el modo ACTIVO -->
+                <div id="photo-frame" class="w-40 h-48 border-4 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden photo-frame-activo">
                     <!-- 
                         Foto Normal (Visible en ACTIVO y PAUSA)
                         Se añade un 'onerror' para mostrar un placeholder si la URL de Drive falla (por CORS o error de link).
                     -->
                     <img id="profile-photo" 
-                         src="" 
-                         alt="Foto de Perfil" 
-                         class="w-full h-full object-cover transition duration-500" 
-                         onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
+                        src="" 
+                        alt="Foto de Perfil" 
+                        class="w-full h-full object-cover transition duration-500" 
+                        onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
                     
                     <!-- Placeholder "SE BUSCA" (Visible solo en ELIMINADO) -->
                     <div id="wanted-placeholder" class="w-full h-full wanted-placeholder absolute flex items-center justify-center hidden">
@@ -277,11 +278,11 @@
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script>
         // =========================================================================================================
-        // 🚨 PASO CRÍTICO: REEMPLAZA ESTA LÍNEA 🚨
+        // ✅ ENDPOINT DE LA API (YA ESTABLECIDO)
         const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
         // =========================================================================================================
 
-        // URL base de la aplicación para el QR (AJUSTADA AL NUEVO NOMBRE DEL ARCHIVO: Identificacion_OBR.html)
+        // URL base de la aplicación para el QR
         const BASE_URL = 'https://exploracionesobr.github.io/Exploraciones-OBR-ID/Identificacion_OBR.html';
 
         // Elementos del DOM
@@ -298,6 +299,7 @@
         const profileIdEl = document.getElementById('profile-id');
         
         const photoEl = document.getElementById('profile-photo');
+        const photoFrameEl = document.getElementById('photo-frame');
         const wantedPlaceholderEl = document.getElementById('wanted-placeholder');
         const qrValidationBlockEl = document.getElementById('qr-validation-block'); // Contenedor del QR e ID
         const qrcodeContainerEl = document.getElementById('qrcode-container');
@@ -314,7 +316,7 @@
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                // Normalizamos a mayúsculas para asegurar la búsqueda sin importar cómo se escribió en la URL
+                // Normalizamos a mayúsculas para asegurar la búsqueda
                 id: (params.get('id') || '').toUpperCase(),
                 mode: params.get('mode')
             };
@@ -326,7 +328,7 @@
             const driveFileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
             if (driveFileIdMatch && driveFileIdMatch[1]) {
                 const fileId = driveFileIdMatch[1];
-                // Formato para obtener el contenido directo de la imagen (usando uc?export=view)
+                // Formato para obtener el contenido directo de la imagen
                 return `https://drive.google.com/uc?export=view&id=${fileId}`;
             }
             // Si ya es una URL directa o no es de Drive, la retorna sin cambios
@@ -341,12 +343,6 @@
             actionButtonsEl.classList.add('hidden');
             socialIconsInCardEl.classList.add('hidden'); // Ocultar por defecto
 
-            if (API_ENDPOINT === 'TU_ENDPOINT_AQUI') {
-                console.error("ERROR CRÍTICO: Debes reemplazar 'TU_ENDPOINT_AQUI' con la URL de tu API de Google Sheet.");
-                showError();
-                return;
-            }
-            
             // Si el ID está vacío después de la normalización, muestra error inmediatamente
             if (!id) {
                 console.warn("ID de colaborador vacío.");
@@ -355,7 +351,7 @@
             }
 
             try {
-                // El ID ya está normalizado a mayúsculas desde getUrlParams()
+                // El ID ya está normalizado a mayúsculas
                 const url = `${API_ENDPOINT}/search?id_colaborador=${id}`;
                 console.log('Intentando conectar a:', url);
                 
@@ -382,22 +378,26 @@
 
         // Función para aplicar estilos basados en el estado
         function applyStatusStyles(status, isProtocolario = false) {
-            // Limpia estilos y filtros
+            // Limpia estilos y filtros generales
             gafetContentEl.classList.remove('status-pausa', 'status-baja');
-            statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500');
-            profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch');
-            profileStatusEl.classList.add('terminal-text');
-            photoEl.classList.remove('grayscale-photo');
-            photoEl.classList.remove('hidden');
+            statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500', 'bg-green-900/40', 'border-green-500');
+            profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch', 'terminal-text');
+            photoEl.classList.remove('grayscale-photo', 'hidden');
             wantedPlaceholderEl.classList.add('hidden');
+            photoFrameEl.classList.remove('shadow-xl', 'shadow-[#10b981]/50'); // Limpia el marco activo
+            riskMsgEl.classList.remove('hidden'); // Muestra riesgo por defecto
             
+            // Estilos base activos
             gafetContentEl.style.borderColor = 'var(--color-activo)';
             gafetContentEl.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.6)';
-            
+            profileStatusEl.classList.add('terminal-text'); // Vuelve al color base
+            photoFrameEl.style.borderColor = 'var(--color-activo)';
+
+
             // Lógica de visualización y texto de estado
             if (status === 'PAUSA') {
                 gafetContentEl.classList.add('status-pausa');
-                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : status; 
+                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : status;
                 
                 // Estilo visual de alerta
                 statusBoxEl.classList.add('bg-yellow-900/40', 'border-yellow-500');
@@ -405,7 +405,9 @@
                 
                 // Efecto visual requerido
                 photoEl.classList.add('grayscale-photo');
-                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Validación siempre visible para PAUSA
+                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
+                photoFrameEl.style.borderColor = 'var(--color-pausa)';
+                socialIconsInCardEl.classList.add('hidden');
             } else if (status === 'ELIMINADO') { 
                 gafetContentEl.classList.add('status-baja');
                 profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : status;
@@ -418,14 +420,19 @@
                 // Efecto visual requerido: SE BUSCA
                 photoEl.classList.add('hidden');
                 wantedPlaceholderEl.classList.remove('hidden');
-                validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO'; // Mensaje específico
-            } else { // ACTIVO
+                validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO';
+                photoFrameEl.style.borderColor = 'var(--color-baja)';
+                riskMsgEl.classList.add('hidden'); // OCULTA RIESGO
+                socialIconsInCardEl.classList.add('hidden');
+            } else { // ACTIVO (Default)
                 profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : status;
                 
                 // Estilo visual activo (verde)
                 statusBoxEl.classList.add('bg-green-900/40', 'border-green-500');
                 profileStatusEl.classList.add(isProtocolario ? '' : 'animate-glitch');
-                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Validación siempre visible para ACTIVO
+                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
+                photoFrameEl.classList.add('shadow-xl', 'shadow-[#10b981]/50'); // Añade sombra de activo
+                socialIconsInCardEl.classList.remove('hidden');
             }
         }
 
@@ -437,12 +444,11 @@
             // Asigna los valores del JSON
             profileNameEl.textContent = user.nombre_completo || 'SIN NOMBRE ASIGNADO';
             profileRoleEl.textContent = user.rol_campo || 'SIN ROL ASIGNADO';
-            // Usa el ID del usuario directamente (no el de la URL) para mostrar el ID correcto
             profileIdEl.textContent = user.id_colaborador || 'N/A';
             
             // Carga la foto, convirtiendo la URL de Drive si es necesario
             const rawPhotoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
-            const finalPhotoUrl = getDirectDriveUrl(rawPhotoUrl); // <-- Conversión aquí
+            const finalPhotoUrl = getDirectDriveUrl(rawPhotoUrl);
             
             photoEl.src = finalPhotoUrl;
             
@@ -455,12 +461,6 @@
             // Controla la visibilidad de los bloques basados en el estado
             if (status === 'ACTIVO' || status === 'PAUSA') {
                 qrValidationBlockEl.classList.remove('hidden');
-                // Iconos solo si es ACTIVO
-                if (status === 'ACTIVO') {
-                    socialIconsInCardEl.classList.remove('hidden'); 
-                } else {
-                    socialIconsInCardEl.classList.add('hidden');
-                }
             } else { // ELIMINADO
                 // Oculta QR, ID, validación y los iconos
                 qrValidationBlockEl.classList.add('hidden');
@@ -468,7 +468,6 @@
             }
 
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
-            // El QR solo debe ser visible si estamos en modo ADMIN.
             if (isAdmin) {
                 // Usa la URL base y agrega el ID para la vista pública (sin modo=admin)
                 const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
@@ -505,8 +504,6 @@
                 return;
             }
 
-            // Usamos un ancho máximo para que se centre y alinee con la tarjeta
-            // Se ajustó max-w-md a max-w-sm para que los botones sean un poco más angostos y no se vean tan desproporcionados con la tarjeta ancha
             actionButtonsEl.classList.remove('hidden');
             
             // Mostrar botón de descarga SOLO si es admin
@@ -516,6 +513,7 @@
 
         // Función para mostrar el error
         function showError() {
+            loadingEl.classList.add('hidden');
             errorContentEl.classList.remove('hidden');
         }
         
@@ -543,6 +541,8 @@
             
             // 1. Obtiene el estado actual (ACTIVO, PAUSA, ELIMINADO)
             const originalStatusText = profileStatusEl.textContent.trim(); 
+            const originalStatus = (originalStatusText.includes("ACTIVO") || originalStatusText === "ACTIVO") ? 'ACTIVO' : 
+                                   (originalStatusText.includes("PAUSA") || originalStatusText === "PAUSA") ? 'PAUSA' : 'ELIMINADO';
 
             // 2. Aplica estilos de modo protocolo para la impresión:
             gafetContentEl.classList.add('pdf-mode'); 
@@ -553,9 +553,9 @@
             idAndValidationBlockEl.classList.remove('hidden');
             qrcodeContainerEl.classList.remove('hidden'); // Muestra el QR en el PDF
             socialIconsInCardEl.classList.add('hidden'); // Oculta iconos en PDF
-            riskMsgEl.classList.add('hidden'); 
+            riskMsgEl.classList.add('hidden'); // Oculta mensaje de riesgo en modo protocolario
             
-            // Asegura que la foto original esté visible y sin filtros de B&W
+            // Asegura que la foto original esté visible y sin filtros de B&W (Protocolario)
             photoEl.classList.remove('grayscale-photo', 'hidden'); 
             wantedPlaceholderEl.classList.add('hidden'); 
             validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Mensaje protocolario
@@ -563,7 +563,7 @@
             actionButtonsEl.classList.add('hidden'); // Ocultar todos los botones de acción
 
             // Aplica estilos de estado para el modo Protocolario (texto completo, sin efectos)
-            applyStatusStyles(originalStatusText, true);
+            applyStatusStyles(originalStatus, true);
             
             // 3. Genera el PDF
             html2pdf(element, {
@@ -576,16 +576,15 @@
                 // 4. Revierte al modo Operativo original (después de la descarga)
                 gafetContentEl.classList.remove('pdf-mode');
                 
-                // Revierte los estilos de estado al modo operativo y ajusta el mensaje de validación
-                applyStatusStyles(originalStatusText, false);
+                // Revierte los estilos de estado al modo operativo
+                applyStatusStyles(originalStatus, false);
                 configureActionButtons(params.mode);
                 
                 // Restaura la visibilidad de bloques y QR (basado en el modo actual)
-                const currentStatus = profileStatusEl.textContent.trim(); 
                 
-                if (currentStatus === 'ACTIVO' || currentStatus === 'PAUSA') {
+                if (originalStatus === 'ACTIVO' || originalStatus === 'PAUSA') {
                     qrValidationBlockEl.classList.remove('hidden');
-                    if (currentStatus === 'ACTIVO') {
+                    if (originalStatus === 'ACTIVO') {
                         socialIconsInCardEl.classList.remove('hidden');
                     }
                     
@@ -600,8 +599,10 @@
                     socialIconsInCardEl.classList.add('hidden');
                 }
                 
-                // Restaura la visibilidad del riesgo
-                riskMsgEl.classList.remove('hidden');
+                // Restaura la visibilidad del riesgo si es ACTIVO o PAUSA
+                if (originalStatus === 'ACTIVO' || originalStatus === 'PAUSA') {
+                    riskMsgEl.classList.remove('hidden');
+                }
                 
                 // Restaura la animación de entrada si no está ya activo
                 profileContentEl.classList.remove('opacity-0');

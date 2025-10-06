@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXPLORACIONES OBR - Perfil de Operativo</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Font Awesome para los iconos de redes sociales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDkGkXJEDoXekD6+l9sN+z5kQ7s/Q7Z6q08e+k7E+h7D/0f/E0A2A5Z7tY3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        /* Colores Base */
+        :root {
+            --color-activo: #10b981; /* Verde esmeralda */
+            --color-inactivo: #ef4444; /* Rojo */
+        }
+
+        /* Estilos específicos de la tarjeta */
+        #profile-card {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid #374151;
+            transform: translateY(0);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        #profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 35px -5px rgba(0, 0, 0, 0.6), 0 15px 15px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Fuente personalizada para el ID y el título */
+        #profileName, #loading-text {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+        #profileId {
+            font-family: 'Roboto Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* Efecto de parpadeo para la advertencia de seguridad */
+        .blinking-text {
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Estilo para el QR Code (asegura que el fondo sea transparente en modo normal) */
+        #qrcode-container img {
+            border-radius: 0.5rem;
+        }
+
+        /* Estilo para la animación del header */
+        #header-animation {
+            height: 200px;
+            overflow: hidden;
+            background-color: #111827;
+            position: relative;
+        }
+
+        .header-line {
+            position: absolute;
+            height: 2px;
+            background-color: var(--color-activo);
+            opacity: 0.8;
+            animation: line-scan 2s forwards;
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); /* Ease-out-expo */
+        }
+
+        .line-top { top: 0; left: 0; width: 0; }
+        .line-bottom { bottom: 0; right: 0; width: 0; animation-delay: 0.5s; }
+        .line-left { top: 0; left: 0; height: 0; animation: line-scan-vertical 1.5s forwards; animation-delay: 1s; }
+        .line-right { bottom: 0; right: 0; height: 0; animation: line-scan-vertical 1.5s forwards; animation-delay: 1.5s; }
+
+        @keyframes line-scan {
+            to { width: 100%; }
+        }
+
+        @keyframes line-scan-vertical {
+            to { height: 100%; }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Contenedor principal de la tarjeta de identificación -->
+    <div id="identification-container" class="w-full max-w-md">
+
+        <!-- Animación de Cabecera (simula escaneo) -->
+        <div id="header-animation" class="rounded-t-xl mb-6 flex flex-col items-center justify-center">
+            <div class="header-line line-top"></div>
+            <div class="header-line line-bottom"></div>
+            <div class="header-line line-left"></div>
+            <div class="header-line line-right"></div>
+            <img src="https://placehold.co/100x100/1F2937/10b981?text=OBR" alt="Logo OBR" class="w-20 h-20 opacity-70">
+            <h2 id="loading-text" class="text-xl text-gray-300 mt-2">Cargando Datos...</h2>
+        </div>
+
+        <!-- Tarjeta de Perfil -->
+        <div id="profile-card" class="rounded-xl overflow-hidden hidden">
+            
+            <!-- 🚀 CAMBIO: Aumentar py-6 a py-8 para dar más espacio arriba de la tarjeta, empujando todo el contenido hacia abajo. -->
+            <div id="profile-card-content" class="text-center px-4 py-8 sm:px-8">
+                
+                <!-- Foto de Perfil -->
+                <!-- 🚀 CAMBIO: Añadido mt-2 (margen superior) y mb-0 (eliminado margen inferior) -->
+                <img id="profileImage" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto object-cover border-4 border-white shadow-2xl transition duration-500 ease-in-out transform hover:scale-105 mt-2 mb-0" 
+                     src="https://placehold.co/128x128/1F2937/FFFFFF?text=OBR" 
+                     onerror="this.src='https://placehold.co/128x128/1F2937/FFFFFF?text=OBR';" 
+                     alt="Foto de Perfil">
+
+                <!-- Detalles de Perfil -->
+                <!-- Ahora, el nombre empieza inmediatamente después de la imagen (mb-0 en img) -->
+                <h1 id="profileName" class="text-3xl sm:text-4xl font-extrabold text-white mb-1">Nombre Completo</h1>
+                <p id="profileRole" class="text-xl sm:text-2xl text-gray-300 italic mb-1">Rol / Cargo</p>
+                <!-- MARGEN INFERIOR DEL ID REDUCIDO -->
+                <p id="profileId" class="text-lg sm:text-xl font-mono text-cyan-400 mb-1">ID: OBR-XXXX</p>
+
+                <!-- Advertencia de Seguridad (Visible solo para perfiles no encontrados o bloqueados) -->
+                <!-- MARGEN SUPERIOR REDUCIDO -->
+                <div id="security-warning" class="bg-red-800/20 text-red-400 p-3 rounded-lg mt-1 hidden">
+                    <p class="font-bold">¡ADVERTENCIA DE SEGURIDAD!</p>
+                    <p id="security-message" class="text-sm mt-1">Perfil no verificado o bloqueado.</p>
+                </div>
+
+                <!-- Detalles Adicionales -->
+                <!-- REDUCCIÓN MÁXIMA PARA PEGARLO AL ID/ADVERTENCIA -->
+                <div id="details-section" class="mt-1 border-t border-gray-700 pt-2 text-left hidden">
+                    <p class="text-gray-400 text-sm mb-2">Detalles del Operativo:</p>
+                    <ul class="text-sm space-y-2 text-gray-200">
+                        <li id="status-li"><span class="font-bold">Estatus:</span> <span id="profileStatus" class="font-semibold px-2 py-0.5 rounded-full">Activo</span></li>
+                        <li id="location-li"><span class="font-bold">Base de Operación:</span> <span id="profileLocation">Area 01</span></li>
+                        <li id="since-li"><span class="font-bold">Desde:</span> <span id="profileSince">N/A</span></li>
+                        <li id="access-li"><span class="font-bold">Nivel de Acceso:</span> <span id="profileAccess">Alpha</span></li>
+                    </ul>
+                </div>
+                
+                <!-- QR Code (Solo visible en modo 'admin' y si el perfil existe) -->
+                <div id="qrcode-container" class="mt-4 p-4 bg-gray-700/30 rounded-lg hidden">
+                    <p class="text-sm text-gray-400 mb-2">Código de Verificación Dinámico:</p>
+                    <div id="qrcode" class="w-32 h-32 mx-auto bg-white p-2 rounded-lg"></div>
+                </div>
+
+                <!-- Iconos Sociales (ocultos en modo 'admin') -->
+                <!-- MARGEN SUPERIOR REDUCIDO -->
+                <div id="social-icons-in-card" class="mt-3 pt-2 border-t border-gray-700 flex justify-center space-x-6 text-gray-400 text-2xl hidden">
+                    <a href="https://twitter.com/exploracionesobr" target="_blank" class="hover:text-cyan-400 transition"><i class="fab fa-twitter"></i></a>
+                    <a href="https://instagram.com/exploracionesobr" target="_blank" class="hover:text-cyan-400 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="mailto:contacto@obr.com" class="hover:text-cyan-400 transition"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+
+            <!-- Footer Dinámico -->
+            <div id="card-footer" class="bg-gray-800/50 p-3 flex justify-between items-center text-xs text-gray-500">
+                <p id="footer-version">VER 1.0.1</p>
+                <p id="footer-timestamp" class="blinking-text">SINCRONIZANDO...</p>
+            </div>
+        </div>
+
+        <!-- Botón para descargar como PDF (Solo visible cuando se carga el perfil) -->
+        <div id="action-buttons" class="mt-8 text-center space-y-4 hidden">
+            <button id="download-pdf-btn" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
+                <i class="fas fa-file-pdf"></i>
+                <span>Descargar Credencial</span>
+            </button>
+            <div id="social-icons-outside-card" class="flex justify-center space-x-6 text-gray-400 text-2xl">
+                <a href="https://twitter.com/exploracionesobr" target="_blank" class="hover:text-cyan-400 transition"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com/exploracionesobr" target="_blank" class="hover:text-cyan-400 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="mailto:contacto@obr.com" class="hover:text-cyan-400 transition"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+
+        <!-- Mensaje de Error (Inicialmente oculto) -->
+        <div id="error-message" class="bg-red-900/50 p-6 rounded-xl text-center text-red-300 mt-8 hidden">
+            <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+            <p class="font-bold text-lg">Error de Acceso</p>
+            <p id="error-details">No se pudo cargar la información del operativo.</p>
+        </div>
+
+    </div>
+
+    <!-- Script de Firebase y Lógica -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Configuración y Variables Globales
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* Placeholder if needed */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        let userId = null;
+
+        // URL base para el QR (para modo dinámico)
+        const BASE_URL = window.location.origin + window.location.pathname;
+
+        // Elementos del DOM
+        const profileCardEl = document.getElementById('profile-card');
+        const loadingTextEl = document.getElementById('loading-text');
+        const headerAnimationEl = document.getElementById('header-animation');
+        const profileImageEl = document.getElementById('profileImage');
+        const profileNameEl = document.getElementById('profileName');
+        const profileRoleEl = document.getElementById('profileRole');
+        const profileIdEl = document.getElementById('profileId');
+        const profileStatusEl = document.getElementById('profileStatus');
+        const profileLocationEl = document.getElementById('profileLocation');
+        const profileSinceEl = document.getElementById('profileSince');
+        const profileAccessEl = document.getElementById('profileAccess');
+        const statusLiEl = document.getElementById('status-li');
+        const locationLiEl = document.getElementById('location-li');
+        const sinceLiEl = document.getElementById('since-li');
+        const accessLiEl = document.getElementById('access-li');
+        const detailsSectionEl = document.getElementById('details-section');
+        const securityWarningEl = document.getElementById('security-warning');
+        const securityMessageEl = document.getElementById('security-message');
+        const actionButtonsEl = document.getElementById('action-buttons');
+        const socialIconsOutsideCardEl = document.getElementById('social-icons-outside-card');
+        const socialIconsInCardEl = document.getElementById('social-icons-in-card');
+        const errorMessageEl = document.getElementById('error-message');
+        const errorDetailsEl = document.getElementById('error-details');
+        const footerTimestampEl = document.getElementById('footer-timestamp');
+        const downloadPdfBtnEl = document.getElementById('download-pdf-btn');
+        const qrcodeContainerEl = document.getElementById('qrcode-container');
+        const qrcodeEl = document.getElementById('qrcode');
+
+
+        /**
+         * Simula la espera y realiza la autenticación inicial.
+         */
+        async function authenticateAndSetup() {
+            try {
+                // Autenticación con token personalizado o anónima
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Esperar a que el estado de autenticación cambie
+                await new Promise(resolve => {
+                    const unsubscribe = onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            userId = user.uid;
+                        } else {
+                            userId = crypto.randomUUID(); // ID anónimo/aleatorio si falla
+                        }
+                        unsubscribe();
+                        resolve();
+                    });
+                });
+                
+            } catch (error) {
+                console.error("Error en autenticación:", error);
+                // Continuar, userId se mantendrá como random si la autenticación falla por completo
+                userId = crypto.randomUUID(); 
+            }
+        }
+
+        /**
+         * Obtiene los parámetros de la URL.
+         * @returns {object} Parámetros de la URL (id y mode).
+         */
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                id: params.get('id'),
+                mode: params.get('mode') // 'admin' o 'user' (por defecto)
+            };
+        }
+
+        /**
+         * Genera y muestra el código QR.
+         * @param {string} url - URL para el QR.
+         * @param {boolean} dynamic - Si debe tener fondo de color (para modo admin).
+         */
+        function generateQrCode(url, dynamic = false) {
+            qrcodeEl.innerHTML = ''; // Limpiar cualquier QR previo
+            const qrColor = dynamic ? '#10b981' : '#000000'; // Verde para admin, negro para normal
+            const qrBgColor = dynamic ? '#FFFFFF' : '#FFFFFF'; // Fondo blanco para ambos
+
+            // Usaremos una simulación simple de QR con placehold.co para evitar dependencias extra.
+            const qrImg = document.createElement('img');
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=${encodeURIComponent(url)}`;
+            qrImg.alt = "Código QR de Verificación";
+            qrImg.className = 'w-full h-full object-contain';
+            qrcodeEl.appendChild(qrImg);
+        }
+
+        /**
+         * Actualiza el timestamp del pie de página.
+         */
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            footerTimestampEl.textContent = `Sincronizado: ${timeString}`;
+            footerTimestampEl.classList.remove('blinking-text');
+        }
+
+        /**
+         * Muestra la interfaz de error.
+         * @param {string} message - Mensaje de error a mostrar.
+         */
+        function displayError(message) {
+            headerAnimationEl.classList.add('hidden');
+            profileCardEl.classList.add('hidden');
+            actionButtonsEl.classList.add('hidden');
+            socialIconsOutsideCardEl.classList.add('hidden');
+            errorMessageEl.classList.remove('hidden');
+            errorDetailsEl.textContent = message;
+        }
+
+        /**
+         * Lógica principal de carga y visualización del perfil.
+         * @param {string} id - ID del perfil a cargar.
+         */
+        function startLoadingSequence(id) {
+            authenticateAndSetup().then(() => {
+                const params = getUrlParams();
+                
+                // Simular un retardo para la "carga de datos"
+                loadingTextEl.textContent = `Buscando ID: ${id || 'N/A'}...`;
+
+                setTimeout(async () => {
+                    headerAnimationEl.classList.add('hidden');
+                    loadingTextEl.classList.add('hidden');
+                    profileCardEl.classList.remove('hidden');
+                    actionButtonsEl.classList.remove('hidden');
+                    
+                    const profileID = id ? id.toUpperCase().trim() : 'N/A';
+                    
+                    if (profileID === 'N/A') {
+                        // Perfil no encontrado (ID faltante)
+                        displayError('No se proporcionó un ID de operativo. Verifique el código QR o URL.');
+                        return;
+                    }
+                    
+                    // RUTA DE FIRESTORE: /artifacts/{appId}/public/data/operativos/{profileID}
+                    const docRef = doc(db, `artifacts/${appId}/public/data/operativos`, profileID);
+                    let profileData = null;
+                    let isProfileFound = false;
+
+                    try {
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (docSnap.exists()) {
+                            profileData = docSnap.data();
+                            isProfileFound = true;
+                        }
+                    } catch (e) {
+                        console.error("Error al obtener datos de Firestore:", e);
+                        // Permitir cargar datos de prueba si hay un error de conexión y no estamos en modo admin
+                        if (params.mode !== 'admin') {
+                            console.warn("Cargando datos de prueba por error de DB.");
+                        } else {
+                            displayError('Error de conexión con la base de datos. Intente de nuevo.');
+                            return;
+                        }
+                    }
+
+                    // --- Lógica de Prueba y Error ---
+                    if (!isProfileFound && profileID === 'OBR-2024') {
+                        // Perfil de prueba
+                        profileData = {
+                            nombre: 'ALEJANDRA RUIZ D.', 
+                            rol: 'Jefe de Exploraciones', 
+                            img: 'https://placehold.co/128x128/374151/FFFFFF?text=A.R.D',
+                            status: 'Activo',
+                            base: 'Base Principal - Zona A',
+                            since: '12/03/2020',
+                            access: 'Alpha-9'
+                        };
+                        isProfileFound = true;
+                    } 
+                    
+                    if (!isProfileFound) {
+                        // Perfil NO encontrado (incluyendo OBR-A-7734)
+                        profileData = { 
+                            nombre: 'OPERATIVO NO ENCONTRADO', 
+                            rol: 'Estado: Bloqueado', 
+                            img: 'https://placehold.co/128x128/991b1b/FFFFFF?text=BLOQUEADO',
+                            status: 'Bloqueado',
+                            base: 'N/A',
+                            since: 'N/A',
+                            access: 'N/A'
+                        };
+                    }
+                    // --- Fin Lógica de Prueba y Error ---
+                    
+                    // --- Aplicar Datos al DOM ---
+                    profileNameEl.textContent = profileData.nombre;
+                    profileRoleEl.textContent = profileData.rol;
+                    profileIdEl.textContent = `ID: ${profileID}`;
+                    profileImageEl.src = profileData.img;
+
+                    // Actualizar detalles
+                    profileStatusEl.textContent = profileData.status;
+                    profileLocationEl.textContent = profileData.base;
+                    profileSinceEl.textContent = profileData.since;
+                    profileAccessEl.textContent = profileData.access;
+                    
+                    // Colorear el estatus y manejar advertencia
+                    if (profileData.status === 'Activo') {
+                        profileStatusEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-green-600/50 text-green-300';
+                        securityWarningEl.classList.add('hidden');
+                        detailsSectionEl.classList.remove('hidden');
+                        socialIconsInCardEl.classList.remove('hidden');
+                        updateTimestamp(); // Sincronizar timestamp
+                    } else {
+                        profileStatusEl.className = 'font-semibold px-2 py-0.5 rounded-full bg-red-600/50 text-red-300';
+                        securityWarningEl.classList.remove('hidden');
+                        
+                        if (isProfileFound) {
+                            securityMessageEl.textContent = `Estado: ${profileData.status}. Verifique la validez con su superior.`;
+                        } else {
+                             securityMessageEl.textContent = `ID ${profileID} no registrado o ha sido revocado.`;
+                             socialIconsInCardEl.classList.add('hidden');
+                             detailsSectionEl.classList.add('hidden'); // Ocultar detalles si no se encuentra
+                        }
+                    }
+
+
+                    // Lógica específica del modo 'admin'
+                    if (params.mode === 'admin') {
+                        // En modo admin, ocultar botones de acción y mostrar el QR dinámico
+                        actionButtonsEl.classList.add('hidden');
+                        socialIconsInCardEl.classList.add('hidden');
+
+                        if (profileData.status === 'Activo') {
+                            const cleanUrl = `${BASE_URL}?id=${profileID}`;
+                            generateQrCode(cleanUrl, true); // true = Modo dinámico (con color de fondo)
+                            qrcodeContainerEl.classList.remove('hidden');
+                        } else {
+                            qrcodeContainerEl.classList.add('hidden');
+                        }
+                    } else {
+                        // Modo 'user' (normal), ocultar QR dinámico
+                        qrcodeContainerEl.classList.add('hidden');
+                    }
+
+
+                    // Configurar la descarga de PDF (solo la tarjeta visible)
+                    downloadPdfBtnEl.onclick = () => {
+                        const originalButtonsVisibility = actionButtonsEl.classList.contains('hidden');
+                        const originalIconsVisibility = socialIconsOutsideCardEl.classList.contains('hidden');
+
+                        // Ocultar botones e íconos fuera de la tarjeta temporalmente para el PDF
+                        actionButtonsEl.classList.add('hidden'); 
+                        socialIconsOutsideCardEl.classList.add('hidden');
+
+                        const element = profileCardEl;
+                        html2pdf(element, {
+                            margin: 10,
+                            filename: `ID_OBR_${profileID}.pdf`,
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                            jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+                        }).then(() => {
+                            // Restaurar la visibilidad después de la descarga
+                            if (!originalButtonsVisibility) actionButtonsEl.classList.remove('hidden');
+                            if (!originalIconsVisibility) socialIconsOutsideCardEl.classList.remove('hidden');
+                        });
+                    };
+
+                }, 50); // PAUSA CRÍTICA REDUCIDA A 50ms
+            });
+        }
+
+
+        // Ejecución al cargar la página
+        window.onload = function() {
+            const { id } = getUrlParams();
+            const HEADER_ANIMATION_DURATION = 2000; 
+
+            // Espera a que termine la animación de la cabecera
+            setTimeout(() => {
+                startLoadingSequence(id);
+            }, HEADER_ANIMATION_DURATION);
+        };
+    </script>
+</body>
+</html>

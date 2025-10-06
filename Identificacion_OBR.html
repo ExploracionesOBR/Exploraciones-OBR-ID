@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EXPLORACIONES OBR - Identificación de Operativo</title>
+    <title>EXPLORACIONES OBR - Perfil de Operativo</title>
     <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Font Awesome para los iconos de redes sociales -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDkGkXJEDoXekD6+l9sN+z5kQ7s/Q7Z6q08e+k7E+h7D/0f/E0A2A5Z7tY3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -29,7 +28,6 @@
         /* Fondo con textura de la tarjeta */
         .card-texture-bg {
             background-color: #1a1a1a;
-            /* Asegura que el patrón de rejilla se superponga correctamente */
             background-image: 
                 radial-gradient(circle at 1px 1px, #ffffff20 1px, transparent 0),
                 linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px);
@@ -38,8 +36,8 @@
 
         .card-container {
             /* Estilos del contenedor principal, simula el gafete */
-            height: 95vh; /* Se usa altura relativa para que no se corra en móviles */
-            max-height: 750px;
+            height: 97vh; /* Se usa altura relativa para que no se corra en móviles */
+            max-height: 700px;
             background-color: var(--color-fondo);
             border: 4px solid var(--color-activo);
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
@@ -157,6 +155,49 @@
             color: var(--color-activo);
             text-shadow: 0 0 5px var(--color-activo);
         }
+        
+        /* --- EFECTOS DE TEXTO (Typing multi-línea) --- */
+
+        /* Estilo general de la línea de escritura */
+        .typing-line {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap; 
+            width: 0; 
+        }
+
+        /* Línea 1: EXPLORACIONES (13 caracteres) */
+        .typing-line-1 {
+            animation: 
+                typing-1 2.6s steps(13, end) forwards; /* 13 chars * 0.2s */
+            animation-delay: 0.5s; 
+        }
+
+        /* Línea 2: OBR (3 caracteres) - Empieza después de la línea 1 (+ 0.5s de pausa) */
+        .typing-line-2 {
+            /* Retraso: 0.5s (initial) + 2.6s (line 1) + 0.5s (pause) = 3.6s */
+            animation: 
+                typing-2 0.6s steps(3, end) forwards;
+            animation-delay: 3.6s;
+            opacity: 0; /* Oculto hasta que empieza la animación */
+        }
+
+        /* Keyframes para la línea 1 */
+        @keyframes typing-1 {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        /* Keyframes para la línea 2 (incluye aparecer) */
+        @keyframes typing-2 {
+            from { width: 0; opacity: 1; }
+            to { width: 100%; opacity: 1; }
+        }
+
+        /* Keyframes para el cursor parpadeante (mantenido por si es necesario en otros sitios) */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--color-activo); }
+        }
 
     </style>
 </head>
@@ -164,8 +205,13 @@
 
     <!-- Contenedor principal de la tarjeta (para PDF y visualización) -->
     <div id="gafet-content" class="card-container flex flex-col items-center text-center card-texture-bg">
-        <!-- Título principal -->
-        <h1 class="text-4xl font-black terminal-text leading-tight mb-2">EXPLORACIONES OBR</h1>
+        <!-- Título principal con el efecto de Máquina de Escribir (AHORA A DOS LÍNEAS CENTRADAS) -->
+        <h1 class="text-4xl font-black terminal-text leading-tight mb-2 text-center flex flex-col items-center">
+            <!-- Línea 1 -->
+            <span class="typing-line typing-line-1">EXPLORACIONES</span>
+            <!-- Línea 2, añade un margen superior para separarlas -->
+            <span class="typing-line typing-line-2 mt-1">OBR</span>
+        </h1>
         <div class="h-0.5 w-full bg-green-500 opacity-70 my-3 shadow-md shadow-[#10b981]/50" id="divider"></div>
 
         <!-- Loader inicial -->
@@ -175,24 +221,22 @@
         </div>
 
         <!-- Contenido del Perfil -->
-        <!-- Se agrega 'opacity-0' para que el 'glitch-in' pueda animar la opacidad desde 0 -->
-        <div id="profile-content" class="hidden w-full flex-grow flex flex-col justify-between glitch-in opacity-0">
+        <div id="profile-content" class="hidden w-full flex-grow flex flex-col justify-between glitch-in">
             
             <!-- SECCIÓN SUPERIOR: Foto y Datos -->
             <div class="w-full flex flex-col items-center">
                 
                 <!-- Marco de la Foto (Contenedor para aplicar filtros o reemplazo) -->
-                <!-- Se agregó 'photo-frame-activo' para un control de estilo más fino en el modo ACTIVO -->
-                <div id="photo-frame" class="w-40 h-48 border-4 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden photo-frame-activo">
+                <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-6 overflow-hidden">
                     <!-- 
                         Foto Normal (Visible en ACTIVO y PAUSA)
                         Se añade un 'onerror' para mostrar un placeholder si la URL de Drive falla (por CORS o error de link).
                     -->
                     <img id="profile-photo" 
-                        src="" 
-                        alt="Foto de Perfil" 
-                        class="w-full h-full object-cover transition duration-500" 
-                        onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
+                         src="" 
+                         alt="Foto de Perfil" 
+                         class="w-full h-full object-cover transition duration-00" 
+                         onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
                     
                     <!-- Placeholder "SE BUSCA" (Visible solo en ELIMINADO) -->
                     <div id="wanted-placeholder" class="w-full h-full wanted-placeholder absolute flex items-center justify-center hidden">
@@ -233,6 +277,15 @@
                 </div>
                 <!-- FIN BLOQUE ICONOS -->
             </div>
+            
+            <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD (CON ESTILO IDÉNTICO A ZONA DE ALTO RIESGO) -->
+            <div id="security-warning" class="w-full mt-4 mb-4 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500">
+                <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
+                    ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
+                </p>
+            </div>
+            <!-- Fin SECCIÓN ADVERTENCIA DE SEGURIDAD -->
+
 
             <!-- SECCIÓN INFERIOR: QR y Registro (Pegado al fondo, alinea a la derecha el ID) -->
             <div id="qr-validation-block" class="w-full flex justify-between items-end mt-4">
@@ -245,7 +298,7 @@
                 <!-- Bloque de Validación/ID (Derecha) - Alineación a la derecha y ocupa espacio restante -->
                 <div id="id-and-validation-block" class="text-right flex-grow">
                     <!-- Mensaje de Validación -->
-                    <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500">⚠️ ZONA DE ALTO RIESGO</p>
+                    <p id="risk-msg" class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 uppercase">⚠️ ZONA DE ALTO RIESGO</p>
                     <!-- El mensaje de validación es ahora "BIOMÉTRICO CONFIRMADO" para ACTIVO/PAUSA y "ELIMINADO" en otro caso -->
                     <p id="validation-msg" class="text-xs mono-text text-gray-400 mt-1 transition duration-500">Validación: BIOMÉTRICO CONFIRMADO</p>
 
@@ -259,31 +312,32 @@
 
         <!-- Contenido de Error -->
         <div id="error-content" class="hidden w-full pt-12">
-            <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch">👻 ERROR [404] 👻</p>
+            <p class="text-3xl font-extrabold terminal-text text-red-500 animate-glitch">ERROR [404]</p>
             <p class="text-xl mono-text text-gray-400 mt-4">PERFIL DE COLABORADOR NO ENCONTRADO O INVÁLIDO.</p>
-            <p class="text-sm mono-text text-gray-500 mt-2">⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR.⚠️</p>
+            <!-- APLICACIÓN DE ESTILO HIGH RISK (ROJO, PEQUEÑO, PULSANTE) AL MENSAJE DE CONTACTO EN ERROR -->
+            <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest mt-2 uppercase">CONTACTE A SEGURIDAD DE EXPLORACIONES OBR.</p>
         </div>
     </div>
 
     <!-- Bloque de botones de acción antiguo (solo para modo ADMIN) -->
-    <div id="action-buttons" class="mt-8 w-full max-w-sm space-y-3 hidden">
+    <div id="action-buttons" class="mt-8 w-full max-w-md space-y-3 hidden">
         <h2 id="action-buttons-header" class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
         
         <!-- Botón para Descargar Perfil (PDF) - Solo visible en modo ADMIN -->
         <button id="download-button" class="w-full py-3 rounded-md terminal-text border border-green-500 bg-green-700/30 hover:bg-green-700/50 transition shadow-md shadow-[#10b981]/50 hidden">
-            <span class="mono-text font-bold">DESCARGAR IDENTIFICACIÓN PROTOCOLARIA (PDF)</span>
+            <span class="mono-text font-bold">DESCARGAR GAFETE PROTOCOLARIO (PDF)</span>
         </button>
     </div>
 
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script>
         // =========================================================================================================
-        // ✅ ENDPOINT DE LA API (YA ESTABLECIDO)
-        const API_ENDPOINT = 'https://sheetdb.io/api/v1/dyznipq97zwv4'; 
+        // 🚨 PASO CRÍTICO: REEMPLAZA ESTA LÍNEA 🚨
+        const API_ENDPOINT = 'TU_ENDPOINT_AQUI'; 
         // =========================================================================================================
 
-        // URL base de la aplicación para el QR
-        const BASE_URL = 'https://exploracionesobr.github.io/Exploraciones-OBR-ID/Identificacion_OBR.html';
+        // URL base de la aplicación para el QR (usando el formato de GitHub Pages que especificaste)
+        const BASE_URL = 'https://exploracionesobr.github.io/Exploraciones-OBR-ID/profile_gafet_dinamico.html';
 
         // Elementos del DOM
         const loadingEl = document.getElementById('loading');
@@ -299,7 +353,6 @@
         const profileIdEl = document.getElementById('profile-id');
         
         const photoEl = document.getElementById('profile-photo');
-        const photoFrameEl = document.getElementById('photo-frame');
         const wantedPlaceholderEl = document.getElementById('wanted-placeholder');
         const qrValidationBlockEl = document.getElementById('qr-validation-block'); // Contenedor del QR e ID
         const qrcodeContainerEl = document.getElementById('qrcode-container');
@@ -316,8 +369,7 @@
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                // Normalizamos a mayúsculas para asegurar la búsqueda
-                id: (params.get('id') || '').toUpperCase(),
+                id: params.get('id'),
                 mode: params.get('mode')
             };
         }
@@ -328,7 +380,7 @@
             const driveFileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
             if (driveFileIdMatch && driveFileIdMatch[1]) {
                 const fileId = driveFileIdMatch[1];
-                // Formato para obtener el contenido directo de la imagen
+                // Formato para obtener el contenido directo de la imagen (usando uc?export=view)
                 return `https://drive.google.com/uc?export=view&id=${fileId}`;
             }
             // Si ya es una URL directa o no es de Drive, la retorna sin cambios
@@ -343,22 +395,19 @@
             actionButtonsEl.classList.add('hidden');
             socialIconsInCardEl.classList.add('hidden'); // Ocultar por defecto
 
-            // Si el ID está vacío después de la normalización, muestra error inmediatamente
-            if (!id) {
-                console.warn("ID de colaborador vacío.");
+            if (API_ENDPOINT === 'TU_ENDPOINT_AQUI') {
+                console.error("ERROR CRÍTICO: Debes reemplazar 'TU_ENDPOINT_AQUI' con la URL de tu API de Google Sheet.");
                 showError();
                 return;
             }
 
             try {
-                // El ID ya está normalizado a mayúsculas
                 const url = `${API_ENDPOINT}/search?id_colaborador=${id}`;
                 console.log('Intentando conectar a:', url);
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                // Asume que la respuesta es un array y toma el primer elemento
                 const user = data[0]; 
 
                 if (user && user.id_colaborador) {
@@ -378,26 +427,22 @@
 
         // Función para aplicar estilos basados en el estado
         function applyStatusStyles(status, isProtocolario = false) {
-            // Limpia estilos y filtros generales
+            // Limpia estilos y filtros
             gafetContentEl.classList.remove('status-pausa', 'status-baja');
-            statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500', 'bg-green-900/40', 'border-green-500');
-            profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch', 'terminal-text');
-            photoEl.classList.remove('grayscale-photo', 'hidden');
+            statusBoxEl.classList.remove('bg-yellow-900/40', 'border-yellow-500', 'bg-gray-900/40', 'border-gray-500');
+            profileStatusEl.classList.remove('text-yellow-400', 'text-gray-400', 'animate-glitch');
+            profileStatusEl.classList.add('terminal-text');
+            photoEl.classList.remove('grayscale-photo');
+            photoEl.classList.remove('hidden');
             wantedPlaceholderEl.classList.add('hidden');
-            photoFrameEl.classList.remove('shadow-xl', 'shadow-[#10b981]/50'); // Limpia el marco activo
-            riskMsgEl.classList.remove('hidden'); // Muestra riesgo por defecto
             
-            // Estilos base activos
             gafetContentEl.style.borderColor = 'var(--color-activo)';
             gafetContentEl.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.6)';
-            profileStatusEl.classList.add('terminal-text'); // Vuelve al color base
-            photoFrameEl.style.borderColor = 'var(--color-activo)';
-
-
+            
             // Lógica de visualización y texto de estado
             if (status === 'PAUSA') {
                 gafetContentEl.classList.add('status-pausa');
-                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : status;
+                profileStatusEl.textContent = isProtocolario ? "ESTE PERFIL ESTÁ EN PAUSA" : status; 
                 
                 // Estilo visual de alerta
                 statusBoxEl.classList.add('bg-yellow-900/40', 'border-yellow-500');
@@ -405,9 +450,7 @@
                 
                 // Efecto visual requerido
                 photoEl.classList.add('grayscale-photo');
-                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
-                photoFrameEl.style.borderColor = 'var(--color-pausa)';
-                socialIconsInCardEl.classList.add('hidden');
+                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Validación siempre visible para PAUSA
             } else if (status === 'ELIMINADO') { 
                 gafetContentEl.classList.add('status-baja');
                 profileStatusEl.textContent = isProtocolario ? "PERFIL ELIMINADO" : status;
@@ -420,19 +463,14 @@
                 // Efecto visual requerido: SE BUSCA
                 photoEl.classList.add('hidden');
                 wantedPlaceholderEl.classList.remove('hidden');
-                validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO';
-                photoFrameEl.style.borderColor = 'var(--color-baja)';
-                riskMsgEl.classList.add('hidden'); // OCULTA RIESGO
-                socialIconsInCardEl.classList.add('hidden');
-            } else { // ACTIVO (Default)
+                validationMsgEl.textContent = 'Validación: PERFIL ELIMINADO'; // Mensaje específico
+            } else { // ACTIVO
                 profileStatusEl.textContent = isProtocolario ? "PERFIL ACTIVO" : status;
                 
                 // Estilo visual activo (verde)
                 statusBoxEl.classList.add('bg-green-900/40', 'border-green-500');
                 profileStatusEl.classList.add(isProtocolario ? '' : 'animate-glitch');
-                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO';
-                photoFrameEl.classList.add('shadow-xl', 'shadow-[#10b981]/50'); // Añade sombra de activo
-                socialIconsInCardEl.classList.remove('hidden');
+                validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Validación siempre visible para ACTIVO
             }
         }
 
@@ -448,7 +486,7 @@
             
             // Carga la foto, convirtiendo la URL de Drive si es necesario
             const rawPhotoUrl = user.url_foto || 'https://placehold.co/160x192/050505/10b981?text=SIN+FOTO';
-            const finalPhotoUrl = getDirectDriveUrl(rawPhotoUrl);
+            const finalPhotoUrl = getDirectDriveUrl(rawPhotoUrl); // <-- Conversión aquí
             
             photoEl.src = finalPhotoUrl;
             
@@ -461,6 +499,12 @@
             // Controla la visibilidad de los bloques basados en el estado
             if (status === 'ACTIVO' || status === 'PAUSA') {
                 qrValidationBlockEl.classList.remove('hidden');
+                // Iconos solo si es ACTIVO
+                if (status === 'ACTIVO') {
+                    socialIconsInCardEl.classList.remove('hidden'); 
+                } else {
+                    socialIconsInCardEl.classList.add('hidden');
+                }
             } else { // ELIMINADO
                 // Oculta QR, ID, validación y los iconos
                 qrValidationBlockEl.classList.add('hidden');
@@ -468,6 +512,7 @@
             }
 
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
+            // El QR solo debe ser visible si estamos en modo ADMIN.
             if (isAdmin) {
                 // Usa la URL base y agrega el ID para la vista pública (sin modo=admin)
                 const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
@@ -485,13 +530,7 @@
             // Controla la visibilidad de botones de descarga (solo ADMIN)
             configureActionButtons(params.mode);
             
-            // Muestra el contenido y reinicia la animación de entrada
-            profileContentEl.classList.remove('hidden', 'opacity-0');
-            
-            // Pequeño truco para reiniciar la animación 'glitch-in' cada vez que se carga el perfil
-            profileContentEl.classList.remove('glitch-in');
-            void profileContentEl.offsetWidth; // Trigger reflow
-            profileContentEl.classList.add('glitch-in');
+            profileContentEl.classList.remove('hidden');
         }
         
         // Controla la visibilidad de botones de descarga y redes sociales
@@ -513,7 +552,6 @@
 
         // Función para mostrar el error
         function showError() {
-            loadingEl.classList.add('hidden');
             errorContentEl.classList.remove('hidden');
         }
         
@@ -534,15 +572,12 @@
         // Función para descargar como PDF (MODO PROTOCOLARIO)
         downloadButton.addEventListener('click', function() {
             const element = document.getElementById('gafet-content');
-            // Cambia el prefijo del archivo PDF
-            const filename = `IDENTIFICACION_PROTOCOLARIA_${profileIdEl.textContent}.pdf`;
+            const filename = `GAFETE_PROTOCOLARIO_${profileIdEl.textContent}.pdf`;
             
             const params = getUrlParams();
             
             // 1. Obtiene el estado actual (ACTIVO, PAUSA, ELIMINADO)
             const originalStatusText = profileStatusEl.textContent.trim(); 
-            const originalStatus = (originalStatusText.includes("ACTIVO") || originalStatusText === "ACTIVO") ? 'ACTIVO' : 
-                                   (originalStatusText.includes("PAUSA") || originalStatusText === "PAUSA") ? 'PAUSA' : 'ELIMINADO';
 
             // 2. Aplica estilos de modo protocolo para la impresión:
             gafetContentEl.classList.add('pdf-mode'); 
@@ -553,9 +588,9 @@
             idAndValidationBlockEl.classList.remove('hidden');
             qrcodeContainerEl.classList.remove('hidden'); // Muestra el QR en el PDF
             socialIconsInCardEl.classList.add('hidden'); // Oculta iconos en PDF
-            riskMsgEl.classList.add('hidden'); // Oculta mensaje de riesgo en modo protocolario
+            riskMsgEl.classList.add('hidden'); 
             
-            // Asegura que la foto original esté visible y sin filtros de B&W (Protocolario)
+            // Asegura que la foto original esté visible y sin filtros de B&W
             photoEl.classList.remove('grayscale-photo', 'hidden'); 
             wantedPlaceholderEl.classList.add('hidden'); 
             validationMsgEl.textContent = 'Validación: BIOMÉTRICO CONFIRMADO'; // Mensaje protocolario
@@ -563,7 +598,7 @@
             actionButtonsEl.classList.add('hidden'); // Ocultar todos los botones de acción
 
             // Aplica estilos de estado para el modo Protocolario (texto completo, sin efectos)
-            applyStatusStyles(originalStatus, true);
+            applyStatusStyles(originalStatusText, true);
             
             // 3. Genera el PDF
             html2pdf(element, {
@@ -575,16 +610,19 @@
             }).then(() => {
                 // 4. Revierte al modo Operativo original (después de la descarga)
                 gafetContentEl.classList.remove('pdf-mode');
+                profileContentEl.classList.add('glitch-in'); // Restaura animación de entrada
+                riskMsgEl.classList.remove('hidden');
                 
-                // Revierte los estilos de estado al modo operativo
-                applyStatusStyles(originalStatus, false);
+                // Revierte los estilos de estado al modo operativo y ajusta el mensaje de validación
+                applyStatusStyles(originalStatusText, false);
                 configureActionButtons(params.mode);
                 
                 // Restaura la visibilidad de bloques y QR (basado en el modo actual)
+                const currentStatus = profileStatusEl.textContent.trim(); 
                 
-                if (originalStatus === 'ACTIVO' || originalStatus === 'PAUSA') {
+                if (currentStatus === 'ACTIVO' || currentStatus === 'PAUSA') {
                     qrValidationBlockEl.classList.remove('hidden');
-                    if (originalStatus === 'ACTIVO') {
+                    if (currentStatus === 'ACTIVO') {
                         socialIconsInCardEl.classList.remove('hidden');
                     }
                     
@@ -598,15 +636,6 @@
                     qrValidationBlockEl.classList.add('hidden');
                     socialIconsInCardEl.classList.add('hidden');
                 }
-                
-                // Restaura la visibilidad del riesgo si es ACTIVO o PAUSA
-                if (originalStatus === 'ACTIVO' || originalStatus === 'PAUSA') {
-                    riskMsgEl.classList.remove('hidden');
-                }
-                
-                // Restaura la animación de entrada si no está ya activo
-                profileContentEl.classList.remove('opacity-0');
-                profileContentEl.classList.add('glitch-in');
             });
         });
 

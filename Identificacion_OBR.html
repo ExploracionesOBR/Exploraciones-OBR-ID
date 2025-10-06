@@ -227,10 +227,12 @@
                 
                 <!-- Marco de la Foto (Dimensiones: w-40 h-48) -->
                 <div id="photo-frame" class="w-40 h-48 border-3 border-green-500 shadow-xl shadow-[#10b981]/50 bg-gray-900 flex items-center justify-center mb-4 overflow-hidden relative">
+                    <!-- ATRIBUTO crossorigin="anonymous" AÑADIDO PARA MEJOR COMPATIBILIDAD CON CORS/PDF -->
                     <img id="profile-photo" 
                          src="" 
                          alt="Foto de Perfil" 
-                         class="w-full h-full object-cover transition duration-00" 
+                         class="w-full h-full object-cover transition duration-00"
+                         crossorigin="anonymous" 
                          onerror="this.onerror=null; this.src='https://placehold.co/160x192/050505/ef4444?text=ERROR+CARGA+FOTO';">
                     
                     <!-- El placeholder ahora tiene width: 100% y height: 100% -->
@@ -241,26 +243,21 @@
             </div>
 
             <!-- Estado de Activación (DELAY-2) -->
-            <!-- Reducción de mb-6 a mb-4 -->
             <div id="status-box" class="p-3 mb-4 w-full bg-green-900/40 border border-green-500 rounded-lg shadow-inner transition duration-500 fade-in-sequential" data-delay="2">
                 <p class="text-xs uppercase mono-text">Estado del Perfil</p>
                 <p id="profile-status" class="text-2xl font-extrabold terminal-text mt-1 transition duration-500"></p>
             </div>
             
             <!-- Datos del Colaborador (Nombre y Rol) (DELAY-3) -->
-            <!-- Reducción de espaciado general -->
             <div class="mb-2 w-full fade-in-sequential" data-delay="3">
-                <!-- Reducción de mt-4 a mt-2 -->
                 <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-2">Nombre de Operativo</p>
                 <p id="profile-name" class="text-3xl font-bold terminal-text leading-tight border-b border-green-700/50 pb-1"></p>
                 
-                <!-- Reducción de mt-6 a mt-3 -->
                 <p class="text-xs uppercase mono-text text-green-300 opacity-80 mt-3">Rol de Activo</p>
                 <p id="profile-role" class="text-2xl font-bold terminal-text leading-tight"></p>
             </div>
             
             <!-- BLOQUE: ICONOS DE REDES SOCIALES (DELAY-4) -->
-            <!-- Reducción de mt-6 mb-4 a mt-4 mb-2 -->
             <div id="social-icons-in-card" class="w-full flex justify-center space-x-4 mt-4 mb-2 fade-in-sequential" data-delay="4">
                 <!-- TikTok -->
                 <a href="https://www.tiktok.com/@exploracionesobr?_t=ZS-90HMchigZaj&_r=1" target="_blank" class="social-icon-wrapper rounded-full p-2">
@@ -278,7 +275,6 @@
             <!-- FIN BLOQUE ICONOS -->
             
             <!-- SECCIÓN ADVERTENCIA DE SEGURIDAD (Oculto en ACTIVO/PAUSA, visible en ELIMINADO/Error) -->
-            <!-- Reducción de mt-4 mb-4 a mt-2 mb-2 -->
             <div id="security-warning" class="w-full mt-2 mb-2 p-2 border border-red-600 bg-red-900/20 rounded transition duration-500 hidden fade-in-sequential" data-delay="5">
                 <p class="text-xs mono-text text-red-500 animate-pulse tracking-widest transition duration-500 text-center uppercase">
                     ⚠️ CONTACTE A SEGURIDAD DE EXPLORACIONES OBR
@@ -287,7 +283,6 @@
 
 
             <!-- SECCIÓN INFERIOR: QR y Registro (DELAY-6) -->
-            <!-- Reducción de mt-4 a mt-2 -->
             <div id="qr-validation-block" class="w-full flex justify-between items-end mt-2 fade-in-sequential" data-delay="6">
                 
                 <!-- QR de Validación Dinámico (Izquierda) - Solo visible en modo ADMIN o PDF -->
@@ -621,6 +616,7 @@
             // --- LÓGICA DE VISIBILIDAD DEL QR ---
             if (isAdmin && user.id_colaborador) {
                 const cleanUrl = `${BASE_URL}?id=${user.id_colaborador}`; 
+                console.log(`[DEBUG] Generando QR para URL: ${cleanUrl}`); // Log de diagnóstico
                 generateQrCode(cleanUrl);
                 qrcodeContainerEl.classList.remove('hidden'); 
             } else {
@@ -690,7 +686,7 @@
             // Asegura visibilidad para la impresión
             qrValidationBlockEl.classList.remove('hidden'); 
             idAndValidationBlockEl.classList.remove('hidden');
-            qrcodeContainerEl.classList.remove('hidden');
+            qrcodeContainerEl.classList.remove('hidden'); // FORZAR VISIBILIDAD
             socialIconsInCardEl.classList.add('hidden'); 
             riskMsgEl.classList.add('hidden');
             securityWarningEl.classList.add('hidden'); // Ocultar la advertencia si está visible
@@ -762,3 +758,4 @@
     </script>
 </body>
 </html>
+

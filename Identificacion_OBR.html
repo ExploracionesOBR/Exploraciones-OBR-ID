@@ -44,7 +44,7 @@
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
             padding: 2rem;
             width: 100%;
-            max-width: 25rem; /* Ancho ajustado para móviles */
+            max-width: 28rem; /* RESTAURADO al tamaño original para que el marco no se vea descuadrado */
             transition: all 0.5s ease;
         }
         
@@ -265,7 +265,7 @@
     </div>
 
     <!-- Bloque de botones de acción antiguo (solo para modo ADMIN) -->
-    <div id="action-buttons" class="mt-8 w-full max-w-md space-y-3 hidden">
+    <div id="action-buttons" class="mt-8 w-full max-w-sm space-y-3 hidden">
         <h2 id="action-buttons-header" class="text-lg mono-text text-center text-green-400 border-t border-green-700/50 pt-3">ACCIONES DE PERFIL</h2>
         
         <!-- Botón para Descargar Perfil (PDF) - Solo visible en modo ADMIN -->
@@ -506,6 +506,7 @@
             }
 
             // Usamos un ancho máximo para que se centre y alinee con la tarjeta
+            // Se ajustó max-w-md a max-w-sm para que los botones sean un poco más angostos y no se vean tan desproporcionados con la tarjeta ancha
             actionButtonsEl.classList.remove('hidden');
             
             // Mostrar botón de descarga SOLO si es admin
